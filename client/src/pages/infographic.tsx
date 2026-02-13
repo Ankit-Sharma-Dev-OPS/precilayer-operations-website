@@ -35,7 +35,7 @@ const phases = [
   {
     id: 1,
     title: "Order Release & Technical Verification",
-    subtitle: "Sales Order verification and technical ownership",
+    subtitle: "SO verification and project ownership",
     icon: FileText,
     color: "from-blue-500 to-blue-600",
     bgColor: "bg-blue-500/10 dark:bg-blue-500/20",
@@ -43,35 +43,30 @@ const phases = [
     textColor: "text-blue-600 dark:text-blue-400",
     steps: [
       {
-        name: "1.1 - Sales Order Creation & Technical Verification",
+        name: "1.1 - SO Creation & Technical Verification",
         details: [
-          "Sales Order (SO) created by Commercial Engineer from customer PO",
-          "SO revision checked against latest customer requirements",
-          "Job folders already exist in system from ERP/sales pipeline",
+          "Commercial Engineer creates SO from customer PO and checks revisions",
+          "Project Engineer verifies drawings, STEP files, and latest revisions",
+          "Project Engineer takes ownership and updates trackers",
         ],
         jobFolder: [
-          "Customer drawing (latest revision verified)",
-          "STEP file (latest revision verified)",
-          "Customer specifications",
-          "Material specification",
-          "Surface treatment specification",
-          "Special process specification",
-          "Customer quality clauses",
+          "Drawing (rev. verified)",
+          "STEP file (rev. verified)",
+          "Material spec",
+          "Surface treatment spec",
+          "Special process spec",
+          "Quality clauses",
         ],
-        responsibilities: {
-          "Commercial Engineer": ["Create Sales Order from customer PO", "Check SO revisions and amendments", "Verify customer data completeness"],
-          "Project Engineer": ["Check all technical material: drawings, STEP files, latest revisions", "Verify drawing revision matches PO requirements", "Take technical ownership of the job", "Update project trackers and scheduling"],
-        },
       },
       {
-        name: "1.2 - Compliance & Special Requirement Identification",
+        name: "1.2 - Compliance Screening",
         critical: true,
-        details: ["This step prevents catastrophic mistakes. Critical for AS9100 and medical device compliance."],
+        details: ["Prevents catastrophic errors — AS9100 / ISO 13485 compliance gate"],
         classifications: {
-          Material: ["Standard commercial", "AMS material", "ASTM material", "DFARS compliance required", "Medical grade (ISO 13485)", "Aerospace grade (AS9100)", "ITAR / Export controlled material"],
-          Process: ["Standard machining", "NADCAP required process", "Special process requiring certification", "Validated process (medical)", "Customer-approved supplier required"],
-          Inspection: ["Visual inspection", "Standard dimensional", "CMM inspection required", "Full inspection / FAI required", "First article inspection (AS9102)", "GD&T / True Position verification", "Surface finish verification"],
-          "Regulatory & Compliance": ["AS9100 quality requirements", "ISO 13485 medical device compliance", "NADCAP special process audit trail", "Customer-specific quality clauses review", "Export control / ITAR screening", "Certificate of Conformance (CoC) requirements", "Material traceability per EN 10204"],
+          Material: ["Standard", "AMS / ASTM", "DFARS", "Medical (ISO 13485)", "Aerospace (AS9100)", "ITAR controlled"],
+          Process: ["Standard machining", "NADCAP required", "Certified special process", "Customer-approved supplier"],
+          Inspection: ["Visual", "Dimensional", "CMM", "FAI (AS9102)", "GD&T", "Surface finish"],
+          Regulatory: ["AS9100", "ISO 13485", "NADCAP audit", "ITAR screening", "CoC required", "EN 10204 traceability"],
         },
       },
     ],
@@ -88,60 +83,43 @@ const phases = [
     critical: true,
     steps: [
       {
-        name: "2.1 - Process & Resource Requirements",
+        name: "2.1 - Process & Resource Mapping",
         details: [
-          "Identify all required machines (CNC milling, turning, EDM, wirecut, etc.)",
-          "Define number of processes and sequence of operations",
-          "Identify outsourced processes (heat treatment, coating, plating, NADCAP processes)",
-          "Determine which operations are in-house vs. outsource",
-          "Identify special tooling or fixture requirements",
+          "Machines needed (CNC mill, turn, EDM, wirecut, etc.)",
+          "In-house vs. outsource per operation",
+          "Special tooling / fixture requirements",
         ],
       },
       {
         name: "2.2 - Machining Strategy",
-        details: [
-          "Setup count and sequence",
-          "Machine selection per operation",
-          "Datum definition and reference system",
-          "Workholding strategy per setup",
-          "Roughing and finishing plan",
-        ],
+        details: ["Setups, machine selection, datums, workholding, roughing/finishing plan"],
       },
       {
-        name: "2.3 - Material Definition & Stock Check",
+        name: "2.3 - Material & Stock",
         details: [
-          "Raw material form (bar, plate, billet, forging)",
-          "Raw material size and grade",
-          "Raw material removal strategy",
-          "Check in-house stock availability immediately",
-          "If not in stock: set purchase order immediately to avoid delays",
+          "Material form, size, grade defined",
+          "Check in-house stock immediately — if unavailable, order now",
         ],
         critical: true,
       },
       {
-        name: "2.4 - Special Process Routing",
-        details: [
-          "Define all outsourced operations and suppliers",
-          "Process sequence with in-house / outsource interleaving",
-          "Supplier lead time estimation",
-        ],
+        name: "2.4 - Outsource Routing",
+        details: ["Suppliers, sequence, lead times"],
       },
       {
-        name: "2.5 - Inspection Plan Definition",
-        details: ["Coordinated with Quality Engineer", "Define inspection points between operations"],
+        name: "2.5 - Inspection Plan",
+        details: ["Coordinate with QE — define inspection points between ops"],
       },
       {
-        name: "2.6 - Time Estimation & CEDD",
+        name: "2.6 - CEDD Estimation",
         details: [
-          "Estimate total production time across all operations",
-          "Include outsource lead times in schedule",
-          "Calculate and confirm Customer Expected Delivery Date (CEDD)",
-          "Inform customer / commercial team of CEDD",
-          "Flag any risk to delivery timeline early",
+          "Estimate total time including outsource lead times",
+          "Confirm Customer Expected Delivery Date (CEDD)",
+          "Inform commercial team — flag delivery risks early",
         ],
       },
     ],
-    gate: "Programming CANNOT begin before this is released. Material in-house stock must be checked or order placed immediately.",
+    gate: "Programming CANNOT begin before release. Stock must be checked or ordered immediately.",
   },
   {
     id: 3,
@@ -217,68 +195,63 @@ const phases = [
     textColor: "text-violet-600 dark:text-violet-400",
     steps: [
       {
-        name: "5.1 - Strategy Review Before Programming",
+        name: "5.1 - Strategy Review First",
         details: [
-          "Programmer must fully review and understand the Manufacturing Strategy Sheet before starting",
-          "If any doubts exist about the strategy, discuss with Project Engineer before proceeding",
-          "Any deviation from the approved strategy must be approved by Project Engineer or Production Manager",
-          "Never assume or improvise — follow the strategy exactly or get approval for changes",
+          "Review and understand the Manufacturing Strategy Sheet fully",
+          "Doubts? Discuss with Project Engineer before starting",
         ],
         critical: true,
       },
       {
-        name: "5.2 - Job Numbering System",
+        name: "5.2 - Job Number Format",
         details: [
-          "Every project follows a strict numbering format",
-          "Format: [Serial][Account][Date] — e.g., 123XX2613",
-          "123 = Serial number, XX = Business account code, 26 = Year, 1 = Month, 3 = Day",
-          "Parts within a project: 123XX2613-88, 123XX2613-89, 123XX2613-100",
-          "Last digits (-88, -89, etc.) = Master Production Schedule series",
-          "This number must appear on every drawing on the shop floor",
+          "Must appear on every shop floor drawing",
         ],
       },
       {
-        name: "5.3 - Setup Numbering (Programmer Responsibility)",
+        name: "5.3 - CAM Folders & Setup Numbers",
         details: [
-          "For each part, the programmer adds setup numbers: -1, -2, -3, etc.",
-          "Example: 123XX2613-88-1 (Setup 1), 123XX2613-88-2 (Setup 2), 123XX2613-88-3 (Setup 3)",
-          "Setup numbering is strictly the programmer's responsibility",
-          "Each setup number must match the Manufacturing Strategy Sheet sequence",
+          "Programmer adds setup suffix: -1, -2, -3 per setup",
+          "Part folders = total mfg parts in order",
+          "Each setup folder must have a process sheet inside",
         ],
       },
       {
-        name: "5.4 - CAM Folder Structure (Before Starting Any Job)",
+        name: "5.4 - Program & Release",
         details: [
-          "Before starting programming, verify the CAM folder is set up correctly",
-          "Total number of part folders must equal total manufacturing parts in the order",
-          "Each folder must contain sub-folders for every setup of that part",
-          "Each setup folder must contain a process sheet outlining programs, tools, and parameters",
-        ],
-      },
-      {
-        name: "5.5 - Programming & Release",
-        details: [
-          "Follow Manufacturing Strategy Sheet exactly",
-          "Follow Quality Control Plan and datum definition",
-          "Program simulation mandatory before release",
-          "Release to production only after full verification",
+          "Follow strategy sheet, QC plan, and datums exactly",
+          "Simulation mandatory before release",
         ],
       },
     ],
+    numberingGuide: {
+      format: "123XX2613",
+      segments: [
+        { part: "123", label: "Serial" },
+        { part: "XX", label: "Account" },
+        { part: "26", label: "Year" },
+        { part: "1", label: "Month" },
+        { part: "3", label: "Day" },
+      ],
+      partExample: "123XX2613-88",
+      partLabel: "MPS Series",
+      setupExample: "123XX2613-88-2",
+      setupLabel: "Setup 2",
+    },
     folderStructure: {
       project: "123XX2613",
       parts: [
         {
-          folder: "123XX2613-88 - DWG-001 - Bracket Assembly",
-          setups: ["123XX2613-88-1 (Setup 1 + Process Sheet)", "123XX2613-88-2 (Setup 2 + Process Sheet)", "123XX2613-88-3 (Setup 3 + Process Sheet)"],
+          folder: "123XX2613-88 - DWG-001 - Bracket",
+          setups: ["-88-1 (Setup 1 + Process Sheet)", "-88-2 (Setup 2 + Process Sheet)", "-88-3 (Setup 3 + Process Sheet)"],
         },
         {
-          folder: "123XX2613-89 - DWG-002 - Housing Cover",
-          setups: ["123XX2613-89-1 (Setup 1 + Process Sheet)", "123XX2613-89-2 (Setup 2 + Process Sheet)"],
+          folder: "123XX2613-89 - DWG-002 - Housing",
+          setups: ["-89-1 (Setup 1 + Process Sheet)", "-89-2 (Setup 2 + Process Sheet)"],
         },
       ],
     },
-    gate: "Programming CANNOT begin without understanding the strategy. Any deviation requires Project Engineer or Production Manager approval.",
+    gate: "No programming without strategy review. Deviations need PE / PM approval.",
   },
   {
     id: 6,
@@ -541,11 +514,11 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                       )}
                       {"responsibilities" in step && step.responsibilities && (
                         <div className="mt-2 space-y-1.5">
-                          {Object.entries(step.responsibilities).map(([role, tasks]) => (
+                          {Object.entries(step.responsibilities as Record<string, string[]>).map(([role, tasks]) => (
                             <div key={role} className="p-2 rounded bg-background/50 dark:bg-background/30">
                               <p className="text-[10px] font-semibold text-muted-foreground">{role}</p>
                               <ul className="mt-0.5">
-                                {tasks.map((t, ti) => (
+                                {tasks.map((t: string, ti: number) => (
                                   <li key={ti} className="text-[10px] text-muted-foreground/80 flex items-center gap-1">
                                     <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" />
                                     {t}
@@ -557,7 +530,7 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                         </div>
                       )}
                       {"classifications" in step && step.classifications && (
-                        <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
                           {Object.entries(step.classifications).map(([cat, items]) => (
                             <div key={cat} className="p-2 rounded bg-background/50 dark:bg-background/30">
                               <p className="text-[10px] font-semibold text-muted-foreground mb-1">{cat} Classification</p>
@@ -595,35 +568,54 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                     </div>
                   )}
 
+                  {"numberingGuide" in phase && phase.numberingGuide && (
+                    <div className="rounded-md p-3 bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20" data-testid="numbering-guide">
+                      <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-2">Job Number Breakdown</h4>
+                      <div className="flex items-end gap-0.5 justify-center mb-2">
+                        {phase.numberingGuide.segments.map((seg, si) => (
+                          <div key={si} className="flex flex-col items-center">
+                            <span className="text-[8px] text-muted-foreground mb-0.5">{seg.label}</span>
+                            <span className="font-mono text-sm font-bold bg-violet-500/15 dark:bg-violet-500/25 px-1.5 py-0.5 rounded text-violet-700 dark:text-violet-300">{seg.part}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-center gap-3 text-[10px]">
+                        <div className="flex items-center gap-1">
+                          <span className="font-mono font-semibold text-foreground">{phase.numberingGuide.partExample}</span>
+                          <Badge variant="outline" className="text-[8px] px-1 py-0">{phase.numberingGuide.partLabel}</Badge>
+                        </div>
+                        <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
+                        <div className="flex items-center gap-1">
+                          <span className="font-mono font-semibold text-foreground">{phase.numberingGuide.setupExample}</span>
+                          <Badge variant="outline" className="text-[8px] px-1 py-0">{phase.numberingGuide.setupLabel}</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {"folderStructure" in phase && phase.folderStructure && (
                     <div className="rounded-md p-3 bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20" data-testid="folder-structure">
                       <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-2 flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5" />
-                        CAM Folder Structure Example
+                        CAM Folder Structure
                       </h4>
-                      <div className="font-mono text-[10px] space-y-1">
-                        <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
-                          <span className="text-violet-500">CAM/</span>
-                          <span className="text-violet-600 dark:text-violet-400">{phase.folderStructure.project}/</span>
-                        </div>
+                      <div className="font-mono text-[10px] space-y-0.5">
+                        <span className="text-violet-600 dark:text-violet-400 font-semibold">{phase.folderStructure.project}/</span>
                         {phase.folderStructure.parts.map((part, pi) => (
-                          <div key={pi} className="ml-4 space-y-0.5">
-                            <div className="flex items-start gap-1.5">
-                              <span className="text-muted-foreground/50 select-none">{pi === phase.folderStructure.parts.length - 1 ? "\u2514\u2500" : "\u251C\u2500"}</span>
+                          <div key={pi} className="ml-3 space-y-0">
+                            <div className="flex items-start gap-1">
+                              <span className="text-muted-foreground/40 select-none">{pi === phase.folderStructure.parts.length - 1 ? "\u2514" : "\u251C"}</span>
                               <span className="text-foreground font-medium">{part.folder}/</span>
                             </div>
-                            {part.setups.map((setup, si) => (
-                              <div key={si} className="ml-6 flex items-start gap-1.5">
-                                <span className="text-muted-foreground/50 select-none">{si === part.setups.length - 1 ? "\u2514\u2500" : "\u251C\u2500"}</span>
-                                <span className="text-muted-foreground">{setup}</span>
-                              </div>
-                            ))}
+                            <div className="ml-4 flex flex-wrap gap-x-3 gap-y-0">
+                              {part.setups.map((setup, si) => (
+                                <span key={si} className="text-muted-foreground text-[9px]">{setup}</span>
+                              ))}
+                            </div>
                           </div>
                         ))}
                       </div>
-                      <p className="text-[9px] text-muted-foreground mt-2 italic">
-                        Number of part folders must equal total manufacturing parts in the order
-                      </p>
+                      <p className="text-[8px] text-muted-foreground mt-1.5 italic">Folders must equal total mfg parts in order</p>
                     </div>
                   )}
 
