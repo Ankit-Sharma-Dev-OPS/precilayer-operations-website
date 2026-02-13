@@ -20,6 +20,10 @@ import {
   Layers,
   Target,
   BookOpen,
+  GitFork,
+  GitMerge,
+  RotateCcw,
+  ArrowRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -552,8 +556,21 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: index * 0.06 + 0.3 }}
+            className="flex flex-col items-center"
           >
-            <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+            {phase.id === 7 ? (
+              <div className="flex flex-col items-center gap-0.5">
+                <GitFork className="w-4 h-4 text-orange-400" />
+                <span className="text-[8px] text-orange-500 font-medium">In-house or Outsource</span>
+              </div>
+            ) : phase.id === 8 ? (
+              <div className="flex flex-col items-center gap-0.5">
+                <GitMerge className="w-4 h-4 text-teal-500" />
+                <span className="text-[8px] text-teal-600 dark:text-teal-400 font-medium">Paths merge for Final QC</span>
+              </div>
+            ) : (
+              <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
+            )}
           </motion.div>
         </div>
       )}
@@ -561,41 +578,199 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
   );
 }
 
-function FlowchartMini() {
-  const flowSteps = [
-    { label: "Customer PO", color: "bg-blue-500" },
-    { label: "Compliance", color: "bg-blue-600" },
-    { label: "Mfg Strategy", color: "bg-indigo-500" },
-    { label: "QC Plan", color: "bg-emerald-500" },
-    { label: "Material", color: "bg-amber-500" },
-    { label: "Programming", color: "bg-violet-500" },
-    { label: "Setup", color: "bg-rose-500" },
-    { label: "1st Part QC", color: "bg-rose-600" },
-    { label: "Production", color: "bg-cyan-500" },
-    { label: "Outsource?", color: "bg-orange-500", branch: true },
-    { label: "Final QC", color: "bg-teal-500" },
-    { label: "Documentation", color: "bg-sky-500" },
-    { label: "Packaging", color: "bg-green-500" },
-    { label: "Dispatch", color: "bg-green-600" },
-  ];
-
+function FlowNode({ label, color, delay, icon: NodeIcon, badge }: { label: string; color: string; delay: number; icon?: typeof Factory; badge?: string }) {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-1 py-4" data-testid="flowchart-mini">
-      {flowSteps.map((step, i) => (
-        <div key={i} className="flex items-center gap-1">
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay, type: "spring", stiffness: 300 }}
+      className="relative"
+    >
+      <div className={`${color} px-2.5 py-1.5 rounded-md text-white text-[10px] font-medium whitespace-nowrap flex items-center gap-1.5`}>
+        {NodeIcon && <NodeIcon className="w-3 h-3" />}
+        {label}
+      </div>
+      {badge && (
+        <span className="absolute -top-1.5 -right-1.5 bg-destructive text-white text-[7px] font-bold px-1 py-0.5 rounded leading-none">
+          {badge}
+        </span>
+      )}
+    </motion.div>
+  );
+}
+
+function FlowArrow({ direction = "right", delay, label }: { direction?: "right" | "down"; delay: number; label?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay }}
+      className={`flex items-center gap-0.5 ${direction === "down" ? "flex-col" : "flex-row"}`}
+    >
+      {direction === "right" ? (
+        <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/50" />
+      ) : (
+        <ArrowDown className="w-3.5 h-3.5 text-muted-foreground/50" />
+      )}
+      {label && (
+        <span className="text-[8px] text-muted-foreground/60 font-medium">{label}</span>
+      )}
+    </motion.div>
+  );
+}
+
+function FlowchartMini() {
+  return (
+    <div className="py-4" data-testid="flowchart-mini">
+      <Card className="overflow-visible">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <GitFork className="w-4 h-4 text-primary" />
+            <span className="text-xs font-semibold">Production Flow Map</span>
+            <span className="text-[10px] text-muted-foreground ml-1">Non-linear process with parallel paths</span>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              <FlowNode label="Customer PO" color="bg-blue-500" delay={0} icon={FileText} />
+              <FlowArrow delay={0.05} />
+              <FlowNode label="Compliance" color="bg-blue-600" delay={0.1} />
+              <FlowArrow delay={0.15} />
+              <FlowNode label="Mfg Strategy" color="bg-indigo-500" delay={0.2} badge="CRITICAL" />
+              <FlowArrow delay={0.25} />
+              <FlowNode label="QC Plan" color="bg-emerald-500" delay={0.3} icon={ClipboardCheck} />
+              <FlowArrow delay={0.35} />
+              <FlowNode label="Material" color="bg-amber-500" delay={0.4} icon={Package} />
+            </div>
+
+            <div className="flex justify-center">
+              <FlowArrow direction="down" delay={0.45} />
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              <FlowNode label="Programming" color="bg-violet-500" delay={0.5} icon={Layers} />
+              <FlowArrow delay={0.55} />
+              <FlowNode label="Setup & 1st Part" color="bg-rose-500" delay={0.6} icon={Wrench} />
+              <FlowArrow delay={0.65} />
+              <FlowNode label="Production" color="bg-cyan-500" delay={0.7} icon={Factory} />
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.75 }}
+              className="relative border-2 border-dashed border-orange-400/40 dark:border-orange-500/30 rounded-lg p-3"
+            >
+              <div className="absolute -top-2.5 left-4 bg-background px-2">
+                <span className="text-[9px] font-semibold text-orange-500 flex items-center gap-1">
+                  <GitFork className="w-3 h-3" /> ROUTING DECISION
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/20"
+                >
+                  <span className="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">In-House Path</span>
+                  <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                    <FlowNode label="In-House QC" color="bg-cyan-600" delay={0.85} icon={Search} />
+                    <FlowArrow delay={0.9} />
+                    <FlowNode label="Next Op" color="bg-cyan-500" delay={0.95} icon={Cog} />
+                  </div>
+                  <div className="flex items-center gap-1 text-[8px] text-muted-foreground">
+                    <RotateCcw className="w-2.5 h-2.5" />
+                    <span>Repeat for each in-house operation</span>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20"
+                >
+                  <span className="text-[9px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Outsource Path</span>
+                  <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                    <FlowNode label="Outgoing QC" color="bg-orange-500" delay={0.85} icon={ExternalLink} />
+                    <FlowArrow delay={0.9} />
+                    <FlowNode label="Supplier" color="bg-orange-600" delay={0.95} />
+                    <FlowArrow delay={1.0} />
+                    <FlowNode label="Incoming QC" color="bg-orange-500" delay={1.05} icon={Search} badge="QC" />
+                  </div>
+                  <div className="flex items-center gap-1 text-[8px] text-muted-foreground">
+                    <RotateCcw className="w-2.5 h-2.5" />
+                    <span>Returns to production after QC pass</span>
+                  </div>
+                </motion.div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+                className="mt-2 text-center"
+              >
+                <span className="text-[8px] text-muted-foreground italic">
+                  Parts can alternate between in-house and outsource paths multiple times per job
+                </span>
+              </motion.div>
+            </motion.div>
+
+            <div className="flex justify-center">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.15 }}
+                className="flex items-center gap-1"
+              >
+                <GitMerge className="w-3.5 h-3.5 text-teal-500" />
+                <span className="text-[9px] text-muted-foreground font-medium">All paths merge</span>
+              </motion.div>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              <FlowNode label="Final QC" color="bg-teal-500" delay={1.2} icon={Search} badge="CRITICAL" />
+              <FlowArrow delay={1.25} />
+              <FlowNode label="Documentation" color="bg-sky-500" delay={1.3} icon={FileText} />
+              <FlowArrow delay={1.35} />
+              <FlowNode label="Packaging" color="bg-green-500" delay={1.4} icon={Package} />
+              <FlowArrow delay={1.45} />
+              <FlowNode label="Dispatch" color="bg-green-600" delay={1.5} icon={Truck} />
+            </div>
+          </div>
+
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: i * 0.07, type: "spring", stiffness: 300 }}
-            className={`${step.color} px-2 py-1 rounded-md text-white text-[10px] font-medium whitespace-nowrap ${step.branch ? "ring-2 ring-orange-300 dark:ring-orange-600" : ""}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.6 }}
+            className="flex flex-wrap items-center justify-center gap-3 mt-4 pt-3 border-t border-dashed"
           >
-            {step.label}
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-cyan-500" />
+              <span className="text-[9px] text-muted-foreground">In-House</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-orange-500" />
+              <span className="text-[9px] text-muted-foreground">Outsource</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <GitFork className="w-3 h-3 text-orange-400" />
+              <span className="text-[9px] text-muted-foreground">Split Point</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <GitMerge className="w-3 h-3 text-teal-500" />
+              <span className="text-[9px] text-muted-foreground">Merge Point</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <RotateCcw className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[9px] text-muted-foreground">Repeatable</span>
+            </div>
           </motion.div>
-          {i < flowSteps.length - 1 && (
-            <ChevronRight className="w-3 h-3 text-muted-foreground/40 flex-shrink-0" />
-          )}
-        </div>
-      ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }
