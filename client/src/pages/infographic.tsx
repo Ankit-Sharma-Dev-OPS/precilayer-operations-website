@@ -243,13 +243,18 @@ const phases = [
       parts: [
         {
           folder: "123XX2613-88 - DWG-001 - Bracket",
-          setups: ["-88-1 (Setup 1 + Process Sheet)", "-88-2 (Setup 2 + Process Sheet)", "-88-3 (Setup 3 + Process Sheet)"],
+          setups: ["Setup 1", "Setup 2", "Setup 3"],
         },
         {
           folder: "123XX2613-89 - DWG-002 - Housing",
-          setups: ["-89-1 (Setup 1 + Process Sheet)", "-89-2 (Setup 2 + Process Sheet)"],
+          setups: ["Setup 1", "Setup 2"],
         },
       ],
+    },
+    processSheet: {
+      description: "Every setup folder must contain a Process Sheet",
+      importance: "The process sheet is the single source of truth on the shop floor. Without it, the operator has no verified reference for what to run.",
+      contains: ["Program names & numbers", "Tool list & offsets", "Work coordinate system", "Fixturing instructions", "Key dimensions to check"],
     },
     gate: "No programming without strategy review. Deviations need PE / PM approval.",
   },
@@ -595,27 +600,62 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"folderStructure" in phase && phase.folderStructure && (
                     <div className="rounded-md p-3 bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20" data-testid="folder-structure">
-                      <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-2 flex items-center gap-1.5">
+                      <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-3 flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5" />
                         CAM Folder Structure
                       </h4>
-                      <div className="font-mono text-[10px] space-y-0.5">
-                        <span className="text-violet-600 dark:text-violet-400 font-semibold">{phase.folderStructure.project}/</span>
+
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-md bg-violet-500/20 flex items-center justify-center flex-shrink-0">
+                            <Layers className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                          </div>
+                          <span className="font-mono text-xs font-semibold text-violet-600 dark:text-violet-400">
+                            {phase.folderStructure.project}/
+                          </span>
+                          <span className="text-[9px] text-muted-foreground">Project folder</span>
+                        </div>
+
                         {phase.folderStructure.parts.map((part, pi) => (
-                          <div key={pi} className="ml-3 space-y-0">
-                            <div className="flex items-start gap-1">
-                              <span className="text-muted-foreground/40 select-none">{pi === phase.folderStructure.parts.length - 1 ? "\u2514" : "\u251C"}</span>
-                              <span className="text-foreground font-medium">{part.folder}/</span>
+                          <div key={pi} className="ml-6 p-2.5 rounded-md bg-background/60 dark:bg-background/30 border border-violet-500/10">
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <FileText className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" />
+                              <span className="font-mono text-[11px] font-medium">{part.folder}</span>
                             </div>
-                            <div className="ml-4 flex flex-wrap gap-x-3 gap-y-0">
+                            <div className="ml-5 flex flex-wrap gap-1.5">
                               {part.setups.map((setup, si) => (
-                                <span key={si} className="text-muted-foreground text-[9px]">{setup}</span>
+                                <Badge key={si} variant="outline" className="text-[9px] font-mono px-1.5 py-0.5">
+                                  {setup}
+                                </Badge>
                               ))}
+                              <Badge variant="secondary" className="text-[9px] px-1.5 py-0.5">
+                                + Process Sheet
+                              </Badge>
                             </div>
                           </div>
                         ))}
                       </div>
-                      <p className="text-[8px] text-muted-foreground mt-1.5 italic">Folders must equal total mfg parts in order</p>
+
+                      <p className="text-[9px] text-muted-foreground mt-2.5 italic">
+                        Total part folders must equal total manufacturing parts in the order
+                      </p>
+                    </div>
+                  )}
+
+                  {"processSheet" in phase && phase.processSheet && (
+                    <div className="rounded-md p-3 bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20" data-testid="process-sheet-info">
+                      <h4 className="font-medium text-xs text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+                        <ClipboardCheck className="w-3.5 h-3.5" />
+                        {phase.processSheet.description}
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground mb-2">
+                        {phase.processSheet.importance}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {phase.processSheet.contains.map((item: string, ci: number) => (
+                          <Badge key={ci} variant="outline" className="text-[9px]">{item}</Badge>
+                        ))}
+                      </div>
                     </div>
                   )}
 
