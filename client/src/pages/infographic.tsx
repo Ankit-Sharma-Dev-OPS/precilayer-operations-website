@@ -34,8 +34,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const phases = [
   {
     id: 1,
-    title: "Order Release & Technical Control",
-    subtitle: "Customer PO Receipt and Job Creation",
+    title: "Order Release & Technical Verification",
+    subtitle: "Sales Order verification and technical ownership",
     icon: FileText,
     color: "from-blue-500 to-blue-600",
     bgColor: "bg-blue-500/10 dark:bg-blue-500/20",
@@ -43,15 +43,15 @@ const phases = [
     textColor: "text-blue-600 dark:text-blue-400",
     steps: [
       {
-        name: "1.1 - Customer PO Receipt & Job Creation",
+        name: "1.1 - Sales Order Creation & Technical Verification",
         details: [
-          "Customer PO received and logged",
-          "Unique Job ID created",
-          "Job folder created with all customer technical documents",
+          "Sales Order (SO) created by Commercial Engineer from customer PO",
+          "SO revision checked against latest customer requirements",
+          "Job folders already exist in system from ERP/sales pipeline",
         ],
         jobFolder: [
-          "Customer drawing",
-          "STEP file (if available)",
+          "Customer drawing (latest revision verified)",
+          "STEP file (latest revision verified)",
           "Customer specifications",
           "Material specification",
           "Surface treatment specification",
@@ -59,19 +59,19 @@ const phases = [
           "Customer quality clauses",
         ],
         responsibilities: {
-          Commercial: ["Create Job ID", "Create job folder", "Verify completeness of customer data"],
-          "Quality Engineer": ["Verify specification completeness", "Flag special compliance requirements"],
-          "Manufacturing Engineer": ["Take technical ownership of job"],
+          "Commercial Engineer": ["Create Sales Order from customer PO", "Check SO revisions and amendments", "Verify customer data completeness"],
+          "Project Engineer": ["Check all technical material: drawings, STEP files, latest revisions", "Verify drawing revision matches PO requirements", "Take technical ownership of the job", "Update project trackers and scheduling"],
         },
       },
       {
         name: "1.2 - Compliance & Special Requirement Identification",
         critical: true,
-        details: ["This step prevents catastrophic mistakes."],
+        details: ["This step prevents catastrophic mistakes. Critical for AS9100 and medical device compliance."],
         classifications: {
-          Material: ["Standard commercial", "AMS material", "ASTM material", "DFARS compliance required", "Medical grade", "Aerospace grade"],
-          Process: ["Standard machining", "NADCAP required process", "Special process requiring certification"],
-          Inspection: ["Visual inspection", "Standard dimensional", "CMM inspection required", "Full inspection required", "First article style inspection"],
+          Material: ["Standard commercial", "AMS material", "ASTM material", "DFARS compliance required", "Medical grade (ISO 13485)", "Aerospace grade (AS9100)", "ITAR / Export controlled material"],
+          Process: ["Standard machining", "NADCAP required process", "Special process requiring certification", "Validated process (medical)", "Customer-approved supplier required"],
+          Inspection: ["Visual inspection", "Standard dimensional", "CMM inspection required", "Full inspection / FAI required", "First article inspection (AS9102)", "GD&T / True Position verification", "Surface finish verification"],
+          "Regulatory & Compliance": ["AS9100 quality requirements", "ISO 13485 medical device compliance", "NADCAP special process audit trail", "Customer-specific quality clauses review", "Export control / ITAR screening", "Certificate of Conformance (CoC) requirements", "Material traceability per EN 10204"],
         },
       },
     ],
@@ -88,23 +88,60 @@ const phases = [
     critical: true,
     steps: [
       {
-        name: "Machining Strategy",
-        details: ["Setup count", "Machine selection", "Datum definition", "Workholding strategy", "Roughing and finishing plan"],
+        name: "2.1 - Process & Resource Requirements",
+        details: [
+          "Identify all required machines (CNC milling, turning, EDM, wirecut, etc.)",
+          "Define number of processes and sequence of operations",
+          "Identify outsourced processes (heat treatment, coating, plating, NADCAP processes)",
+          "Determine which operations are in-house vs. outsource",
+          "Identify special tooling or fixture requirements",
+        ],
       },
       {
-        name: "Material Definition",
-        details: ["Raw material form", "Raw material size", "Raw material removal strategy"],
+        name: "2.2 - Machining Strategy",
+        details: [
+          "Setup count and sequence",
+          "Machine selection per operation",
+          "Datum definition and reference system",
+          "Workholding strategy per setup",
+          "Roughing and finishing plan",
+        ],
       },
       {
-        name: "Special Process Routing",
-        details: ["Outsourced operations", "Process sequence"],
+        name: "2.3 - Material Definition & Stock Check",
+        details: [
+          "Raw material form (bar, plate, billet, forging)",
+          "Raw material size and grade",
+          "Raw material removal strategy",
+          "Check in-house stock availability immediately",
+          "If not in stock: set purchase order immediately to avoid delays",
+        ],
+        critical: true,
       },
       {
-        name: "Inspection Plan Definition",
-        details: ["Coordinated with Quality Engineer"],
+        name: "2.4 - Special Process Routing",
+        details: [
+          "Define all outsourced operations and suppliers",
+          "Process sequence with in-house / outsource interleaving",
+          "Supplier lead time estimation",
+        ],
+      },
+      {
+        name: "2.5 - Inspection Plan Definition",
+        details: ["Coordinated with Quality Engineer", "Define inspection points between operations"],
+      },
+      {
+        name: "2.6 - Time Estimation & CEDD",
+        details: [
+          "Estimate total production time across all operations",
+          "Include outsource lead times in schedule",
+          "Calculate and confirm Customer Expected Delivery Date (CEDD)",
+          "Inform customer / commercial team of CEDD",
+          "Flag any risk to delivery timeline early",
+        ],
       },
     ],
-    gate: "Programming CANNOT begin before this is released.",
+    gate: "Programming CANNOT begin before this is released. Material in-house stock must be checked or order placed immediately.",
   },
   {
     id: 3,
@@ -428,7 +465,7 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                       <div className="flex items-center gap-2 mb-2">
                         <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-br ${phase.color}`} />
                         <h4 className={`font-medium text-xs ${phase.textColor}`}>{step.name}</h4>
-                        {step.critical && (
+                        {"critical" in step && step.critical && (
                           <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                         )}
                       </div>
@@ -1026,9 +1063,6 @@ export default function Infographic() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6"
         >
-          <Badge variant="secondary" className="mb-3 text-xs" data-testid="badge-subtitle">
-            High-Mix Rapid Prototyping & Production
-          </Badge>
           <h2 className="text-2xl font-bold tracking-tight" data-testid="text-main-title">
             Production & Quality Control
           </h2>
