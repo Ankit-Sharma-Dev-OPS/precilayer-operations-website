@@ -209,7 +209,7 @@ const phases = [
   {
     id: 5,
     title: "Programming & Production Release",
-    subtitle: "Execute manufacturing strategy",
+    subtitle: "Strategy review, numbering, CAM structure & release",
     icon: Layers,
     color: "from-violet-500 to-violet-600",
     bgColor: "bg-violet-500/10 dark:bg-violet-500/20",
@@ -217,16 +217,68 @@ const phases = [
     textColor: "text-violet-600 dark:text-violet-400",
     steps: [
       {
-        name: "Programming Requirements",
+        name: "5.1 - Strategy Review Before Programming",
         details: [
-          "Follow Manufacturing Strategy Sheet",
-          "Follow Quality Control Plan",
-          "Follow Datum definition",
-          "Program simulation mandatory",
-          "Release to production only after verification",
+          "Programmer must fully review and understand the Manufacturing Strategy Sheet before starting",
+          "If any doubts exist about the strategy, discuss with Project Engineer before proceeding",
+          "Any deviation from the approved strategy must be approved by Project Engineer or Production Manager",
+          "Never assume or improvise — follow the strategy exactly or get approval for changes",
+        ],
+        critical: true,
+      },
+      {
+        name: "5.2 - Job Numbering System",
+        details: [
+          "Every project follows a strict numbering format",
+          "Format: [Serial][Account][Date] — e.g., 123XX2613",
+          "123 = Serial number, XX = Business account code, 26 = Year, 1 = Month, 3 = Day",
+          "Parts within a project: 123XX2613-88, 123XX2613-89, 123XX2613-100",
+          "Last digits (-88, -89, etc.) = Master Production Schedule series",
+          "This number must appear on every drawing on the shop floor",
+        ],
+      },
+      {
+        name: "5.3 - Setup Numbering (Programmer Responsibility)",
+        details: [
+          "For each part, the programmer adds setup numbers: -1, -2, -3, etc.",
+          "Example: 123XX2613-88-1 (Setup 1), 123XX2613-88-2 (Setup 2), 123XX2613-88-3 (Setup 3)",
+          "Setup numbering is strictly the programmer's responsibility",
+          "Each setup number must match the Manufacturing Strategy Sheet sequence",
+        ],
+      },
+      {
+        name: "5.4 - CAM Folder Structure (Before Starting Any Job)",
+        details: [
+          "Before starting programming, verify the CAM folder is set up correctly",
+          "Total number of part folders must equal total manufacturing parts in the order",
+          "Each folder must contain sub-folders for every setup of that part",
+          "Each setup folder must contain a process sheet outlining programs, tools, and parameters",
+        ],
+      },
+      {
+        name: "5.5 - Programming & Release",
+        details: [
+          "Follow Manufacturing Strategy Sheet exactly",
+          "Follow Quality Control Plan and datum definition",
+          "Program simulation mandatory before release",
+          "Release to production only after full verification",
         ],
       },
     ],
+    folderStructure: {
+      project: "123XX2613",
+      parts: [
+        {
+          folder: "123XX2613-88 - DWG-001 - Bracket Assembly",
+          setups: ["123XX2613-88-1 (Setup 1 + Process Sheet)", "123XX2613-88-2 (Setup 2 + Process Sheet)", "123XX2613-88-3 (Setup 3 + Process Sheet)"],
+        },
+        {
+          folder: "123XX2613-89 - DWG-002 - Housing Cover",
+          setups: ["123XX2613-89-1 (Setup 1 + Process Sheet)", "123XX2613-89-2 (Setup 2 + Process Sheet)"],
+        },
+      ],
+    },
+    gate: "Programming CANNOT begin without understanding the strategy. Any deviation requires Project Engineer or Production Manager approval.",
   },
   {
     id: 6,
@@ -540,6 +592,38 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {"folderStructure" in phase && phase.folderStructure && (
+                    <div className="rounded-md p-3 bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20" data-testid="folder-structure">
+                      <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-2 flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5" />
+                        CAM Folder Structure Example
+                      </h4>
+                      <div className="font-mono text-[10px] space-y-1">
+                        <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
+                          <span className="text-violet-500">CAM/</span>
+                          <span className="text-violet-600 dark:text-violet-400">{phase.folderStructure.project}/</span>
+                        </div>
+                        {phase.folderStructure.parts.map((part, pi) => (
+                          <div key={pi} className="ml-4 space-y-0.5">
+                            <div className="flex items-start gap-1.5">
+                              <span className="text-muted-foreground/50 select-none">{pi === phase.folderStructure.parts.length - 1 ? "\u2514\u2500" : "\u251C\u2500"}</span>
+                              <span className="text-foreground font-medium">{part.folder}/</span>
+                            </div>
+                            {part.setups.map((setup, si) => (
+                              <div key={si} className="ml-6 flex items-start gap-1.5">
+                                <span className="text-muted-foreground/50 select-none">{si === part.setups.length - 1 ? "\u2514\u2500" : "\u251C\u2500"}</span>
+                                <span className="text-muted-foreground">{setup}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[9px] text-muted-foreground mt-2 italic">
+                        Number of part folders must equal total manufacturing parts in the order
+                      </p>
                     </div>
                   )}
 
