@@ -32,6 +32,7 @@ import {
   Cpu,
   Eye,
   ShoppingCart,
+  X,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1291,9 +1292,34 @@ function FlowArrow({ direction = "right", delay, label }: { direction?: "right" 
   );
 }
 
-function FlowchartMini() {
+function FlowchartMini({ onPhaseClick }: { onPhaseClick?: (phaseId: number) => void }) {
   return (
     <div className="py-4" data-testid="flowchart-mini">
+      <Card className="overflow-visible mb-3">
+        <CardContent className="p-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pipeline at a Glance</p>
+          <div className="flex gap-0.5">
+            {phases.map((p, i) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.id}
+                  className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-sm cursor-pointer hover-elevate ${p.bgColor}`}
+                  onClick={() => onPhaseClick?.(p.id)}
+                  title={`Phase ${p.id}: ${p.title}`}
+                  data-testid={`pipeline-phase-${p.id}`}
+                >
+                  <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${p.color} flex items-center justify-center`}>
+                    <Icon className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-[9px] font-bold text-muted-foreground">{p.id}</span>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="overflow-visible">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-3">
@@ -1790,9 +1816,77 @@ function TrainingQuiz() {
   );
 }
 
+function OnboardingGuide({ onNavigate }: { onNavigate: (tab: string) => void }) {
+  const [dismissed, setDismissed] = useState(false);
+  if (dismissed) return null;
+  
+  const guideSteps = [
+    { tab: "roles", icon: Users, label: "Roles", description: "Learn who does what" },
+    { tab: "flow", icon: Factory, label: "Flow", description: "See the 11-phase process" },
+    { tab: "matrix", icon: Target, label: "Matrix", description: "Department responsibilities" },
+    { tab: "critical", icon: AlertTriangle, label: "Critical", description: "5 quality gates" },
+    { tab: "quiz", icon: BookOpen, label: "Quiz", description: "Test your knowledge" },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="my-4"
+      data-testid="onboarding-guide"
+    >
+      <Card className="overflow-visible border-primary/20 bg-primary/5">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-semibold">Start Here — How to Use This Training Module</h3>
+            </div>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setDismissed(true)}
+              data-testid="button-dismiss-onboarding"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">Follow these tabs in order to learn the complete production and quality flow:</p>
+          <div className="grid grid-cols-5 gap-2">
+            {guideSteps.map((step, i) => (
+              <button
+                key={step.tab}
+                onClick={() => onNavigate(step.tab)}
+                className="flex flex-col items-center gap-1.5 p-2 rounded-md hover-elevate cursor-pointer text-center"
+                data-testid={`guide-step-${step.tab}`}
+              >
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-bold text-primary">{i + 1}</span>
+                  <step.icon className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-xs font-semibold">{step.label}</span>
+                <span className="text-[10px] text-muted-foreground leading-tight">{step.description}</span>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 export default function Infographic() {
   const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("roles");
+
+  const navigateToPhase = (phaseId: number) => {
+    setActiveTab("flow");
+    setExpandedPhase(phaseId);
+    setTimeout(() => {
+      const el = document.querySelector(`[data-testid="phase-card-${phaseId}"]`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -1848,7 +1942,9 @@ export default function Infographic() {
           </div>
         </motion.div>
 
-        <FlowchartMini />
+        <OnboardingGuide onNavigate={(tab: string) => setActiveTab(tab)} />
+
+        <FlowchartMini onPhaseClick={navigateToPhase} />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
           <TabsList className="grid w-full grid-cols-5" data-testid="tabs-navigation">
@@ -1901,7 +1997,7 @@ export default function Infographic() {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Phase Key</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1">
                     {phases.map(p => (
-                      <div key={p.id} className="flex items-center gap-2">
+                      <div key={p.id} className="flex items-center gap-2 cursor-pointer hover-elevate rounded-sm p-0.5 -m-0.5" onClick={() => navigateToPhase(p.id)}>
                         <div className={`w-5 h-5 rounded-sm bg-gradient-to-br ${p.color} flex items-center justify-center flex-shrink-0`}>
                           <span className="text-[10px] font-bold text-white">{p.id}</span>
                         </div>
@@ -1961,10 +2057,11 @@ export default function Infographic() {
                                               key={phaseId}
                                               className={`h-6 flex-1 rounded-sm flex items-center justify-center text-xs font-bold transition-colors ${
                                                 role.phases.includes(phaseId)
-                                                  ? `${role.color} text-white`
+                                                  ? `${role.color} text-white cursor-pointer`
                                                   : "bg-muted/30 text-muted-foreground/30"
                                               }`}
-                                              title={`Phase ${phaseId}: ${phases[phaseId - 1]?.title}`}
+                                              title={`Phase ${phaseId}: ${phases[phaseId - 1]?.title}${role.phases.includes(phaseId) ? " — click to view" : ""}`}
+                                              onClick={(e) => { if (role.phases.includes(phaseId)) { e.stopPropagation(); navigateToPhase(phaseId); } }}
                                             >
                                               {phaseId}
                                             </div>
@@ -2016,7 +2113,7 @@ export default function Infographic() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <h4 className="font-semibold text-base">{cp.name}</h4>
                             <Badge variant="destructive" className="text-sm px-1.5 py-0">MUST NOT FAIL</Badge>
-                            <Badge variant="secondary" className="text-xs px-1 py-0">Phase {cp.phase}</Badge>
+                            <Badge variant="secondary" className="text-xs px-1 py-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); navigateToPhase(cp.phase); }}>Phase {cp.phase} →</Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">{cp.description}</p>
                           <div className="flex items-center gap-1.5 mt-2 flex-wrap">
@@ -2117,7 +2214,7 @@ export default function Infographic() {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Phase Key</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1">
                     {phases.map(p => (
-                      <div key={p.id} className="flex items-center gap-2">
+                      <div key={p.id} className="flex items-center gap-2 cursor-pointer hover-elevate rounded-sm p-0.5 -m-0.5" onClick={() => navigateToPhase(p.id)}>
                         <div className={`w-5 h-5 rounded-sm bg-gradient-to-br ${p.color} flex items-center justify-center flex-shrink-0`}>
                           <span className="text-[10px] font-bold text-white">{p.id}</span>
                         </div>
@@ -2168,9 +2265,10 @@ export default function Infographic() {
                                         <div
                                           key={phaseId}
                                           className={`h-5 flex-1 rounded-sm flex items-center justify-center text-[10px] font-bold ${
-                                            active ? `${role.color} text-white` : "bg-muted/20 text-muted-foreground/20"
+                                            active ? `${role.color} text-white cursor-pointer` : "bg-muted/20 text-muted-foreground/20"
                                           }`}
-                                          title={active ? `Phase ${phaseId}: ${phase?.title}` : `Phase ${phaseId}`}
+                                          title={active ? `Phase ${phaseId}: ${phase?.title} — click to view` : `Phase ${phaseId}`}
+                                          onClick={(e) => { if (active) { e.stopPropagation(); navigateToPhase(phaseId); } }}
                                         >
                                           {phaseId}
                                         </div>
