@@ -24,6 +24,13 @@ import {
   GitMerge,
   RotateCcw,
   ArrowRight,
+  Users,
+  Briefcase,
+  HardHat,
+  ShieldCheck,
+  Cpu,
+  Eye,
+  ShoppingCart,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -499,6 +506,92 @@ const inspectionMatrix = [
   { condition: "Aerospace / Medical / DFARS / AMS", method: "Certification verification + Enhanced inspection", level: 5 },
 ];
 
+const roles = [
+  { id: "pm", title: "Production Manager", shortTitle: "PM", icon: Factory, color: "bg-cyan-500", textColor: "text-cyan-600 dark:text-cyan-400", tier: "management", description: "Oversees entire production floor operations, resource allocation, and schedule adherence. Ensures production capacity meets delivery commitments.", responsibilities: ["Production scheduling and prioritization", "Resource and machine allocation", "Production bottleneck resolution", "Delivery schedule adherence", "Deviation approval alongside PE"], phases: [2, 5, 6, 7] },
+  { id: "pjm", title: "Project Manager", shortTitle: "PJM", icon: Target, color: "bg-violet-500", textColor: "text-violet-600 dark:text-violet-400", tier: "management", description: "Coordinates cross-functional activities, tracks milestones, and manages project timeline. Bridge between commercial, engineering, and production teams.", responsibilities: ["Project timeline and milestone tracking", "Cross-functional coordination", "Risk identification and mitigation", "Stakeholder communication", "Resource conflict resolution"], phases: [1, 2, 8, 10, 11] },
+  { id: "pe", title: "Project Engineer", shortTitle: "PE", icon: Cog, color: "bg-indigo-500", textColor: "text-indigo-600 dark:text-indigo-400", tier: "engineering", description: "Technical owner of the job from strategy through delivery. Defines manufacturing approach, owns the Manufacturing Strategy Sheet, and coordinates between programming, production, and quality.", responsibilities: ["Manufacturing Strategy Sheet ownership", "Process planning and datum definition", "Technical liaison between customer requirements and shop floor", "Full outsource order placement (not commercial team)", "CEDD estimation and delivery risk flagging"], phases: [1, 2, 3, 5, 8] },
+  { id: "prog", title: "Programmer", shortTitle: "PROG", icon: Cpu, color: "bg-violet-600", textColor: "text-violet-700 dark:text-violet-300", tier: "engineering", description: "Creates CNC programs following the Manufacturing Strategy Sheet. Owns job numbering, CAM folder structure, setup sequencing, and process sheet creation.", responsibilities: ["Strategy Sheet review before programming", "Job numbering and CAM folder structure", "CNC program creation and simulation", "Process sheet creation per setup", "Program release to production"], phases: [5] },
+  { id: "qe", title: "Quality Engineer / QA-QC", shortTitle: "QE", icon: ShieldCheck, color: "bg-emerald-500", textColor: "text-emerald-600 dark:text-emerald-400", tier: "quality", description: "Owns the Quality Control Plan and all inspection activities. Signs off on first parts, outsource returns, and final release. No part moves without QE approval at critical gates.", responsibilities: ["Quality Control Plan creation and ownership", "First Part Verification and approval", "In-process and final inspection", "Outsource incoming/outgoing inspection", "QE sign-off on certifications and compliance", "Non-conformance documentation and disposition"], phases: [3, 6, 7, 8, 9, 10] },
+  { id: "sqe", title: "Supplier Quality Engineer", shortTitle: "SQE", icon: ExternalLink, color: "bg-orange-500", textColor: "text-orange-600 dark:text-orange-400", tier: "quality", description: "Manages supplier quality performance for outsourced processes. Validates supplier capabilities, audits certifications, and ensures incoming parts meet specifications.", responsibilities: ["Supplier qualification and audit", "QCP validation for outsourced work", "Supplier certification verification", "Incoming inspection coordination", "Supplier corrective action management"], phases: [8] },
+  { id: "ss", title: "Shift Supervisor", shortTitle: "SS", icon: Eye, color: "bg-rose-500", textColor: "text-rose-600 dark:text-rose-400", tier: "operations", description: "Manages day-to-day shop floor execution. Ensures operators follow process sheets, monitors production progress, and escalates issues to Production Manager.", responsibilities: ["Shop floor execution oversight", "Operator task assignment", "Process sheet compliance monitoring", "Issue escalation to Production Manager", "Shift handover and status reporting"], phases: [6, 7] },
+  { id: "op", title: "Shift Operator", shortTitle: "OP", icon: HardHat, color: "bg-amber-500", textColor: "text-amber-600 dark:text-amber-400", tier: "operations", description: "Executes machining operations on the shop floor. Follows process sheets, performs in-process self-checks, and reports non-conformances immediately.", responsibilities: ["Machine setup per process sheet", "CNC program execution", "In-process self-inspection", "Non-conformance reporting", "Workspace and tool maintenance"], phases: [6, 7] },
+  { id: "plc", title: "Packaging & Logistics Coordinator", shortTitle: "PLC", icon: Package, color: "bg-green-500", textColor: "text-green-600 dark:text-green-400", tier: "operations", description: "Handles final packaging, corrosion protection, labeling, and dispatch logistics. Ensures parts are properly protected and shipped with correct documentation.", responsibilities: ["Parts cleaning and preparation", "Corrosion and contamination protection", "Proper packaging and labeling", "Dispatch coordination and tracking", "Shipping documentation"], phases: [11] },
+  { id: "ce", title: "Sales & Techno-Commercial Engineer", shortTitle: "CE", icon: Briefcase, color: "bg-blue-500", textColor: "text-blue-600 dark:text-blue-400", tier: "commercial", description: "Creates the Sales Order, handles customer communication, and manages commercial aspects. First point of contact for order intake but does NOT place outsource orders.", responsibilities: ["Sales Order creation and verification", "Customer PO review and acknowledgment", "Commercial documentation and pricing", "Customer communication on delivery dates", "Escalation of delivery risks from PE"], phases: [1] },
+  { id: "proc", title: "Procurement Specialist", shortTitle: "PROC", icon: ShoppingCart, color: "bg-amber-600", textColor: "text-amber-700 dark:text-amber-300", tier: "commercial", description: "Manages raw material procurement, supplier sourcing, and purchase order management. Ensures materials meet specifications and are delivered on time.", responsibilities: ["Raw material sourcing and ordering", "Supplier evaluation for materials", "Purchase order management", "Material delivery tracking", "Material certification collection"], phases: [4] },
+];
+
+const tierLabels: Record<string, { label: string; order: number }> = {
+  management: { label: "Management", order: 1 },
+  engineering: { label: "Engineering", order: 2 },
+  quality: { label: "Quality", order: 3 },
+  operations: { label: "Operations", order: 4 },
+  commercial: { label: "Commercial", order: 5 },
+};
+
+const roleQuizzes: Record<string, Array<{ question: string; options: string[]; correct: number; explanation: string }>> = {
+  pe: [
+    { question: "What must be completed and released before programming can begin?", options: ["Customer PO", "Manufacturing Strategy Sheet", "Raw material order", "Quality Control Plan only"], correct: 1, explanation: "The Manufacturing Strategy Sheet must be fully completed and released by the Project Engineer before programming starts." },
+    { question: "In a full outsource model, who is responsible for placing the order with the supplier?", options: ["Commercial Engineer", "Quality Engineer", "Project Engineer", "Procurement Specialist"], correct: 2, explanation: "In full outsource (Model B), the Project Engineer places the order — not the commercial team. The PE ensures the supplier receives QCP, latest rev drawings, and all requirements." },
+    { question: "What must the Project Engineer provide with the CEDD estimation?", options: ["Only the delivery date", "Total time including outsource lead times and delivery risks", "Just the machining hours", "Customer's requested date only"], correct: 1, explanation: "PE must estimate total time including outsource lead times, confirm CEDD, and inform the commercial team about any delivery risks early." },
+    { question: "What is the PE's role in deviation management?", options: ["PEs cannot approve deviations", "PE approval is needed alongside PM for programming deviations", "Only QE can approve deviations", "Deviations are not allowed"], correct: 1, explanation: "No programming deviation is allowed without PE and PM approval. The PE is the technical authority for the job." },
+  ],
+  ce: [
+    { question: "What is the first step when a customer PO is received?", options: ["Send to production immediately", "Create Sales Order and verify PO details", "Order raw material", "Start programming"], correct: 1, explanation: "The Commercial Engineer creates the Sales Order and verifies all PO details before anything else happens." },
+    { question: "Can the Commercial Engineer place outsource orders with suppliers?", options: ["Yes, always", "Yes, for partial outsource only", "No — this is the Project Engineer's responsibility", "Only with QE approval"], correct: 2, explanation: "In the full outsource model, order placement is the Project Engineer's responsibility, not the commercial team's." },
+    { question: "What should the CE do when PE flags a delivery risk?", options: ["Ignore it and commit to the original date", "Communicate the risk to the customer proactively", "Ask production to work overtime", "Change the order quantity"], correct: 1, explanation: "The CE must communicate delivery risks flagged by the PE to the customer proactively and manage expectations." },
+  ],
+  qe: [
+    { question: "Which inspection level requires a Coordinate Measuring Machine?", options: ["Level 2 - Standard Dimensional", "Level 3 - Precision", "Level 4 - CMM Inspection", "Level 5 - Full Inspection"], correct: 2, explanation: "Level 4 specifically requires a CMM for precise geometric and GD&T measurements." },
+    { question: "When can production continue after the first part is machined?", options: ["Immediately", "After operator self-inspection", "Only after QE First Part Verification and approval", "After programmer review"], correct: 2, explanation: "Production CANNOT continue without QE first part approval. The verification method is defined in the QCP." },
+    { question: "What certifications must be verified when parts return from an outsourced process?", options: ["No certifications needed", "Only CoC", "CoC, MTC, NADCAP cert as applicable — all must be valid", "Just a delivery note"], correct: 2, explanation: "QE must verify all applicable certifications (CoC, MTC, NADCAP) before parts re-enter production. No shortcuts." },
+    { question: "What must the QE do before outsourced parts can ship to the customer?", options: ["Nothing — supplier QC is sufficient", "Formal QE/QC sign-off with all certifications and inspection reports", "Just count the parts", "Only visual inspection"], correct: 1, explanation: "No outsourced parts may enter production or ship without formal QE/QC sign-off covering certifications, inspection, traceability, and non-conformance disposition." },
+    { question: "What must the Quality Control Plan include for outsourced work?", options: ["Only final inspection", "Incoming material, in-process, and final inspection requirements", "Just supplier name", "Only part count verification"], correct: 1, explanation: "The QCP must cover incoming material inspection, in-process requirements, and final inspection requirements for outsourced scope." },
+  ],
+  plc: [
+    { question: "What must happen before parts can be packaged for dispatch?", options: ["Nothing — package immediately", "Parts must be cleaned and protected against corrosion, damage, and contamination", "Only counting is needed", "Just wrap in paper"], correct: 1, explanation: "Parts must be cleaned and protected against corrosion, damage, and contamination before proper packaging is applied." },
+    { question: "Who performs the final release before dispatch?", options: ["The operator", "The shift supervisor", "The Quality Engineer", "The customer"], correct: 2, explanation: "The Quality Engineer performs the final release check before dispatch. Parts cannot ship without QE release." },
+    { question: "What must be recorded when parts are shipped?", options: ["Nothing", "Tracking information and shipping documentation", "Only the customer name", "Just the weight"], correct: 1, explanation: "Tracking must be recorded and proper shipping documentation provided to maintain full traceability." },
+  ],
+  pm: [
+    { question: "When does the Production Manager get involved in the manufacturing flow?", options: ["Only at dispatch", "From strategy definition through production execution", "Only during machining", "Only for outsourced jobs"], correct: 1, explanation: "The PM is involved from manufacturing strategy (resource planning) through programming, setup, and production execution." },
+    { question: "What is the PM's role when a deviation from the strategy sheet is needed?", options: ["PM has no say in deviations", "PM approval required alongside PE for programming deviations", "PM can approve alone", "Deviations go straight to the customer"], correct: 1, explanation: "Programming deviations need both PE and PM approval to ensure production feasibility and schedule impact are considered." },
+    { question: "What should the PM prioritize when there's a production bottleneck?", options: ["Skip quality checks to save time", "Resource reallocation and schedule adjustment while maintaining quality gates", "Cancel the order", "Only inform the customer"], correct: 1, explanation: "The PM must resolve bottlenecks through resource and machine allocation while ensuring all quality gates are maintained." },
+  ],
+  pjm: [
+    { question: "What phases does the Project Manager coordinate across?", options: ["Only production phases", "Order intake, strategy, outsource management, documentation, and dispatch", "Only outsource phases", "Only quality phases"], correct: 1, explanation: "The PJM coordinates across order intake (Phase 1), strategy (Phase 2), outsource (Phase 8), documentation (Phase 10), and dispatch (Phase 11)." },
+    { question: "What should the PJM do when the PE identifies a delivery risk?", options: ["Ignore it", "Track it as a risk, coordinate mitigation, and communicate to stakeholders", "Cancel the project", "Only tell the customer"], correct: 1, explanation: "The PJM must identify risks, coordinate mitigation plans with PE/PM, and communicate status to all stakeholders." },
+    { question: "How does the PJM handle resource conflicts between projects?", options: ["First come first served", "Coordinate with PM to resolve conflicts based on priority and deadlines", "Let operators decide", "Always prioritize the newest order"], correct: 1, explanation: "The PJM works with the Production Manager to resolve resource conflicts based on project priority, deadlines, and customer commitments." },
+  ],
+  prog: [
+    { question: "What must be reviewed before starting any programming work?", options: ["Only the customer drawing", "The Manufacturing Strategy Sheet — in full", "Just the material type", "Only the tolerances"], correct: 1, explanation: "The programmer must review and understand the Manufacturing Strategy Sheet fully before starting. Doubts must be discussed with the PE first." },
+    { question: "What is the correct job numbering format?", options: ["Any format chosen by the programmer", "123XX2613 (Serial-Account-Year-Month-Day)", "Customer PO number", "Sequential numbers only"], correct: 1, explanation: "Job numbering follows the format 123XX2613 where 123=Serial, XX=Account, 26=Year, 1=Month, 3=Day. This must appear on every shop floor drawing." },
+    { question: "What must every setup folder contain?", options: ["Only the CNC program", "A Process Sheet with program names, tool list, WCS, fixturing, and key dimensions", "Just a screenshot", "Nothing — the program is enough"], correct: 1, explanation: "Every setup folder must contain a Process Sheet. It is the single source of truth on the shop floor — without it, the operator has no verified reference." },
+    { question: "What is mandatory before releasing a program to production?", options: ["Nothing — just save and release", "Simulation must be completed", "Only a visual check of toolpaths", "Ask the operator to test it"], correct: 1, explanation: "Simulation is mandatory before release. The programmer must follow strategy sheet, QC plan, and datums exactly." },
+  ],
+  ss: [
+    { question: "What is the Shift Supervisor's primary responsibility?", options: ["Programming CNC machines", "Ensuring operators follow process sheets and monitoring progress", "Placing material orders", "Customer communication"], correct: 1, explanation: "The SS ensures operators follow process sheets, monitors progress, and escalates issues to the Production Manager." },
+    { question: "When should a Shift Supervisor escalate an issue?", options: ["Never", "When a machine breaks, non-conformance found, or production deviates from plan", "Only at end of shift", "Only for outsourced parts"], correct: 1, explanation: "Issues like machine failures, non-conformances, or schedule deviations must be escalated immediately to the PM." },
+    { question: "What must be included in a shift handover?", options: ["Nothing", "Current job status, any issues, pending QC approvals, and machine status", "Just the number of parts made", "Only problems"], correct: 1, explanation: "A complete shift handover must cover current job status, any issues encountered, pending QC approvals, and machine status." },
+  ],
+  op: [
+    { question: "What document must the operator follow during machining?", options: ["The customer drawing only", "The Process Sheet from the setup folder", "Memory from previous jobs", "Verbal instructions from the programmer"], correct: 1, explanation: "The operator must follow the Process Sheet. It contains program names, tool list, WCS, fixturing instructions, and key dimensions." },
+    { question: "What must the operator do with a non-conforming part?", options: ["Continue production and sort later", "Immediately segregate the part and report to supervisor", "Fix it themselves", "Put it back in the batch"], correct: 1, explanation: "Non-conforming parts must be immediately segregated and reported. They cannot remain in the production batch." },
+    { question: "What setup checks must the operator verify before starting?", options: ["Only the program number", "Correct material, program, fixture, and tools — all four", "Just the fixture", "Only the material"], correct: 1, explanation: "The setup checklist requires verification of correct material, correct program, correct fixture, and correct tools before starting." },
+    { question: "When must the operator perform in-process self-inspection?", options: ["Never — that's QE's job", "As defined by the inspection frequency in the Quality Control Plan", "Only on the last part", "Only when supervisor asks"], correct: 1, explanation: "Operators perform in-process inspection at the frequency defined in the QCP (first part, every part, every setup, or sample)." },
+  ],
+  sqe: [
+    { question: "What must the SQE validate before a full outsource order is placed?", options: ["Nothing — just send the drawings", "QCP must be validated and approved for the outsource scope", "Only the supplier's price", "Just the delivery date"], correct: 1, explanation: "The QCP must be validated by Quality Engineering for outsource scope before any order is placed with the supplier." },
+    { question: "What certifications must the SQE verify on incoming outsourced parts?", options: ["None needed", "CoC, MTC, NADCAP certificate, FAI, and process certificates as applicable", "Only supplier invoice", "Just a delivery note"], correct: 1, explanation: "The SQE must verify all applicable certifications: CoC (always), MTC (material), NADCAP (special processes), FAI (new parts/suppliers), and process certificates." },
+    { question: "What should the SQE do when a supplier's certification is invalid or expired?", options: ["Accept the parts anyway", "Reject the parts and initiate supplier corrective action", "Just make a note for next time", "Ask the customer to accept"], correct: 1, explanation: "Invalid or expired certifications mean parts cannot be accepted. The SQE must reject and initiate supplier corrective action." },
+    { question: "For NADCAP-certified processes, what must the SQE confirm?", options: ["Only that the supplier exists", "Supplier's NADCAP certification is current and covers the specific process scope", "Just the price is competitive", "Only delivery time"], correct: 1, explanation: "The SQE must confirm the supplier's NADCAP certification is current and specifically covers the process being outsourced." },
+  ],
+  proc: [
+    { question: "What must be verified before accepting incoming raw material?", options: ["Only the quantity", "Supplier certification, material grade, heat number, and traceability", "Just the delivery note", "Only the price"], correct: 1, explanation: "Incoming material requires verification of supplier certification, material grade, heat number, and traceability before acceptance." },
+    { question: "For DFARS-compliant materials, what document is mandatory?", options: ["Customer PO only", "Material Test Certificate with matching heat number", "Supplier invoice", "Operator sign-off"], correct: 1, explanation: "AMS/DFARS/aerospace materials require a Material Test Certificate and the heat number must match the certificate." },
+    { question: "What must material be tagged with before it can be issued to production?", options: ["Only the Job ID", "Job ID, material grade, heat number, and traceability ID", "Just the customer name", "Only the PO number"], correct: 1, explanation: "Material cannot be issued without a complete traceability tag: Job ID, material grade, heat number, and traceability ID." },
+  ],
+};
+
 function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phases[0]; index: number; isExpanded: boolean; onToggle: () => void }) {
   const Icon = phase.icon;
   return (
@@ -537,6 +630,11 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                     SKIP IF FULLY OUTSOURCED
                   </Badge>
                 )}
+                {roles.filter(r => r.phases.includes(phase.id)).map(role => (
+                  <Badge key={role.id} variant="outline" className={`text-[8px] px-1 py-0 ${role.textColor}`} data-testid={`role-badge-${role.id}-phase-${phase.id}`}>
+                    {role.shortTitle}
+                  </Badge>
+                ))}
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">{phase.subtitle}</p>
             </div>
@@ -1074,92 +1172,15 @@ function FlowchartMini() {
 }
 
 function TrainingQuiz() {
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
 
-  const questions = [
-    {
-      question: "What must happen before programming can begin?",
-      options: [
-        "Customer PO must be received",
-        "Manufacturing Strategy Sheet must be released",
-        "Raw material must be procured",
-        "Quality Engineer must approve the design",
-      ],
-      correct: 1,
-      explanation: "The Manufacturing Strategy Definition (Phase 2) must be completed and released before programming can begin. This ensures all machining parameters are defined.",
-    },
-    {
-      question: "Which inspection level requires a Coordinate Measuring Machine?",
-      options: ["Level 2", "Level 3", "Level 4", "Level 5"],
-      correct: 2,
-      explanation: "Level 4 - CMM Inspection specifically requires a Coordinate Measuring Machine for precise geometric measurements.",
-    },
-    {
-      question: "What must material be tagged with before it can be issued?",
-      options: [
-        "Only the Job ID",
-        "Job ID and material grade only",
-        "Job ID, material grade, heat number, and traceability ID",
-        "Customer name and order number",
-      ],
-      correct: 2,
-      explanation: "Material must be tagged with Job ID, material grade, heat number, and traceability ID. Material cannot be issued without a complete traceability tag.",
-    },
-    {
-      question: "What must happen before parts return to production after outsourcing?",
-      options: [
-        "Parts can return immediately after supplier ships them",
-        "Only part count verification is needed",
-        "Incoming QC inspection and supplier certification verification are mandatory",
-        "Only the operator needs to check parts visually",
-      ],
-      correct: 2,
-      explanation: "Parts returning from outsourced processes must pass incoming QC inspection with certification verification, part count, condition check, and critical dimension verification.",
-    },
-    {
-      question: "How many critical control points must NEVER fail?",
-      options: ["3", "4", "5", "7"],
-      correct: 2,
-      explanation: "There are 5 critical control points: Material traceability, Manufacturing strategy definition, Quality Control Plan definition, Outsource incoming inspection, and Final inspection approval.",
-    },
-    {
-      question: "What inspection is required for parts with tolerances less than 0.02mm?",
-      options: [
-        "Visual inspection",
-        "Standard dimensional inspection",
-        "Precision inspection",
-        "Only final inspection",
-      ],
-      correct: 2,
-      explanation: "Tight tolerance parts (less than 0.02mm) require Precision inspection using height gauges, bore gauges, and similar precision instruments.",
-    },
-    {
-      question: "When can production continue after the first part is machined?",
-      options: [
-        "Immediately after the first part is completed",
-        "After operator self-inspection",
-        "Only after Quality Engineer performs First Part Verification and approves",
-        "After the programmer reviews the output",
-      ],
-      correct: 2,
-      explanation: "Production cannot continue without Quality Engineer approval of the first part. The verification method is defined in the Quality Control Plan.",
-    },
-    {
-      question: "For DFARS-compliant materials, which document is mandatory?",
-      options: [
-        "Customer purchase order only",
-        "Material Test Certificate with matching heat number",
-        "Supplier invoice",
-        "Operator sign-off",
-      ],
-      correct: 1,
-      explanation: "For AMS, DFARS, or aerospace materials, a Material Test Certificate is mandatory and the heat number must match the certificate for full traceability.",
-    },
-  ];
+  const questions = selectedRole ? roleQuizzes[selectedRole] || [] : [];
+  const currentRole = roles.find(r => r.id === selectedRole);
 
   const handleAnswer = (answerIndex: number) => {
     if (showResult) return;
@@ -1188,6 +1209,57 @@ function TrainingQuiz() {
     setCompleted(false);
   };
 
+  const backToRoles = () => {
+    setSelectedRole(null);
+    resetQuiz();
+  };
+
+  if (!selectedRole) {
+    const grouped = Object.entries(tierLabels)
+      .sort(([, a], [, b]) => a.order - b.order)
+      .map(([tierId, tierInfo]) => ({
+        tier: tierId,
+        label: tierInfo.label,
+        members: roles.filter(r => r.tier === tierId),
+      }));
+
+    return (
+      <div className="space-y-4" data-testid="role-selector">
+        <p className="text-xs text-muted-foreground text-center">Select your role to begin a targeted training assessment</p>
+        {grouped.map(group => (
+          <div key={group.tier}>
+            <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{group.label}</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {group.members.map(role => {
+                const RoleIcon = role.icon;
+                const questionCount = roleQuizzes[role.id]?.length || 0;
+                return (
+                  <Card
+                    key={role.id}
+                    className="overflow-visible hover-elevate cursor-pointer"
+                    onClick={() => setSelectedRole(role.id)}
+                    data-testid={`role-select-${role.id}`}
+                  >
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-md ${role.color} flex items-center justify-center flex-shrink-0`}>
+                        <RoleIcon className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold leading-tight">{role.title}</p>
+                        <p className="text-[10px] text-muted-foreground">{questionCount} questions</p>
+                      </div>
+                      <Badge variant="outline" className="text-[9px] flex-shrink-0">{role.shortTitle}</Badge>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (completed) {
     const percentage = Math.round((score / questions.length) * 100);
     return (
@@ -1208,28 +1280,52 @@ function TrainingQuiz() {
             {percentage >= 75 ? "Excellent Work!" : "Keep Learning!"}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            You scored {score} out of {questions.length} questions correctly.
+            {currentRole?.title} — {score} out of {questions.length} correct
           </p>
         </div>
         <Progress value={percentage} className="max-w-xs mx-auto" />
-        <Button onClick={resetQuiz} data-testid="button-retry-quiz">
-          Retake Quiz
-        </Button>
+        <div className="flex items-center justify-center gap-2">
+          <Button variant="outline" onClick={backToRoles} data-testid="button-back-roles">
+            Change Role
+          </Button>
+          <Button onClick={resetQuiz} data-testid="button-retry-quiz">
+            Retake Quiz
+          </Button>
+        </div>
       </div>
     );
   }
 
+  const RoleIcon = currentRole?.icon || Shield;
+
   return (
     <div className="space-y-4" data-testid="training-quiz">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">
-          Question {currentQ + 1} of {questions.length}
-        </span>
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={backToRoles}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground px-2 py-1 rounded-md"
+          data-testid="button-back-roles-inline"
+        >
+          <ArrowRight className="w-3 h-3 rotate-180" />
+          Roles
+        </button>
+        <div className="flex items-center gap-2">
+          <div className={`w-6 h-6 rounded-md ${currentRole?.color} flex items-center justify-center`}>
+            <RoleIcon className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="text-xs font-semibold">{currentRole?.title}</span>
+        </div>
         <Badge variant="secondary" className="text-xs">
-          Score: {score}/{currentQ + (showResult ? 1 : 0)}
+          {score}/{currentQ + (showResult ? 1 : 0)}
         </Badge>
       </div>
-      <Progress value={((currentQ + (showResult ? 1 : 0)) / questions.length) * 100} />
+
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+          Q{currentQ + 1}/{questions.length}
+        </span>
+        <Progress value={((currentQ + (showResult ? 1 : 0)) / questions.length) * 100} className="flex-1" />
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -1335,10 +1431,14 @@ export default function Infographic() {
         <FlowchartMini />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-4" data-testid="tabs-navigation">
+          <TabsList className="grid w-full grid-cols-5" data-testid="tabs-navigation">
             <TabsTrigger value="flow" data-testid="tab-flow">
               <Factory className="w-3.5 h-3.5 mr-1.5" />
               <span className="hidden sm:inline">Flow</span>
+            </TabsTrigger>
+            <TabsTrigger value="roles" data-testid="tab-roles">
+              <Users className="w-3.5 h-3.5 mr-1.5" />
+              <span className="hidden sm:inline">Roles</span>
             </TabsTrigger>
             <TabsTrigger value="critical" data-testid="tab-critical">
               <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
@@ -1364,6 +1464,79 @@ export default function Infographic() {
                 onToggle={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
               />
             ))}
+          </TabsContent>
+
+          <TabsContent value="roles" className="mt-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-bold" data-testid="text-roles-title">Roles & Responsibilities</h3>
+                <p className="text-xs text-muted-foreground">Who does what across the 11-phase production flow</p>
+              </div>
+
+              {Object.entries(tierLabels)
+                .sort(([, a], [, b]) => a.order - b.order)
+                .map(([tierId, tierInfo]) => {
+                  const tierRoles = roles.filter(r => r.tier === tierId);
+                  if (tierRoles.length === 0) return null;
+                  return (
+                    <div key={tierId} className="mb-4">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+                        {tierInfo.label}
+                      </h4>
+                      <div className="space-y-2">
+                        {tierRoles.map((role, ri) => {
+                          const RoleIcon = role.icon;
+                          return (
+                            <motion.div
+                              key={role.id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: ri * 0.05 }}
+                            >
+                              <Card className="overflow-visible" data-testid={`role-card-${role.id}`}>
+                                <CardContent className="p-4">
+                                  <div className="flex items-start gap-3">
+                                    <div className={`w-10 h-10 rounded-md ${role.color} flex items-center justify-center flex-shrink-0`}>
+                                      <RoleIcon className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <h4 className="font-semibold text-sm">{role.title}</h4>
+                                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">{role.shortTitle}</Badge>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground mt-1">{role.description}</p>
+                                      <div className="mt-2 space-y-1">
+                                        {role.responsibilities.map((resp, i) => (
+                                          <div key={i} className="flex items-start gap-1.5 text-[10px]">
+                                            <ChevronRight className="w-2.5 h-2.5 flex-shrink-0 mt-0.5 text-muted-foreground/50" />
+                                            <span className="text-muted-foreground">{resp}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="flex flex-wrap gap-1 mt-2">
+                                        <span className="text-[9px] font-semibold text-muted-foreground mr-1">Active in:</span>
+                                        {role.phases.map(phaseId => (
+                                          <Badge key={phaseId} variant="secondary" className="text-[9px] px-1.5 py-0">
+                                            P{phaseId}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="critical" className="mt-4">
@@ -1571,8 +1744,8 @@ export default function Infographic() {
               animate={{ opacity: 1 }}
             >
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold" data-testid="text-quiz-title">Training Assessment</h3>
-                <p className="text-xs text-muted-foreground">Test your understanding of the PRECILAYER production and quality flow.</p>
+                <h3 className="text-lg font-bold" data-testid="text-quiz-title">Role-Based Training Assessment</h3>
+                <p className="text-xs text-muted-foreground">Select your role and test your specific knowledge of the production and quality flow.</p>
               </div>
               <Card className="overflow-visible" data-testid="quiz-card">
                 <CardContent className="p-4">
