@@ -27,14 +27,13 @@ export default defineConfig({
     },
   },
   // GitHub Pages base path configuration:
-  // For custom domain: base: "/" 
-  // For project repo (github.com/user/precilayer-operations-website): base: "/precilayer-operations-website/"
-  base: "/precilayer-operations-website/",
+  // Using custom domain (operations.precilayer.com) - serve from root
+  base: "/",
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-  },
+  },-
   server: {
     fs: {
       strict: true,
