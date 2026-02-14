@@ -918,14 +918,19 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                           <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                         )}
                       </div>
-                      <ul className="space-y-1 ml-4">
+                      <div className="space-y-0 ml-1">
                         {step.details.map((d, di) => (
-                          <li key={di} className="text-sm text-muted-foreground flex items-start gap-1.5">
-                            <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-muted-foreground/50" />
-                            {d}
-                          </li>
+                          <div key={di} className="flex items-start gap-3 relative">
+                            {di < step.details.length - 1 && (
+                              <div className={`absolute left-[11px] top-6 w-0.5 h-full bg-gradient-to-b ${phase.color} opacity-20`} />
+                            )}
+                            <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${phase.color} flex items-center justify-center flex-shrink-0 text-white text-xs font-bold z-10`}>
+                              {di + 1}
+                            </div>
+                            <p className="text-sm text-muted-foreground pt-0.5 pb-3">{d}</p>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                       {"jobFolder" in step && step.jobFolder && (
                         <div className="mt-2 p-2 rounded bg-background/50 dark:bg-background/30">
                           <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-1">Job Folder Must Contain</p>
@@ -1039,7 +1044,7 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                           <div key={pi} className="ml-6 p-2.5 rounded-md bg-background/60 dark:bg-background/30 border border-violet-500/10">
                             <div className="flex items-center gap-2 mb-1.5">
                               <FileText className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" />
-                              <span className="font-mono text-[11px] font-medium">{part.folder}</span>
+                              <span className="font-mono text-xs font-medium">{part.folder}</span>
                             </div>
                             <div className="ml-5 flex flex-wrap gap-1.5">
                               {part.setups.map((setup, si) => (
@@ -1244,12 +1249,12 @@ function FlowNode({ label, color, delay, icon: NodeIcon, badge }: { label: strin
       transition={{ delay, type: "spring", stiffness: 300 }}
       className="relative"
     >
-      <div className={`${color} px-2.5 py-1.5 rounded-md text-white text-sm font-medium whitespace-nowrap flex items-center gap-1.5`}>
-        {NodeIcon && <NodeIcon className="w-3 h-3" />}
-        {label}
+      <div className={`${color} px-3 py-2 rounded-md text-white font-medium whitespace-nowrap flex items-center gap-2 shadow-sm`}>
+        {NodeIcon && <NodeIcon className="w-4 h-4" />}
+        <span className="text-sm">{label}</span>
       </div>
       {badge && (
-        <span className="absolute -top-1.5 -right-1.5 bg-destructive text-white text-[7px] font-bold px-1 py-0.5 rounded leading-none">
+        <span className="absolute -top-2 -right-2 bg-destructive text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none shadow-sm">
           {badge}
         </span>
       )}
@@ -1802,8 +1807,36 @@ export default function Infographic() {
             Production & Quality Control
           </h2>
           <p className="text-base text-muted-foreground mt-1 max-w-xl mx-auto">
-            Interactive training module covering all 11 phases of the PRECILAYER master production flow, from order intake to dispatch.
+            AS9100 & ISO 13485 compliant master production flow
           </p>
+          <div className="flex items-center justify-center gap-3 mt-3 flex-wrap">
+            <Badge variant="outline" className="text-xs px-2 py-0.5 border-blue-400/50 text-blue-500">AS9100 Rev D</Badge>
+            <Badge variant="outline" className="text-xs px-2 py-0.5 border-emerald-400/50 text-emerald-500">ISO 13485</Badge>
+            <Badge variant="outline" className="text-xs px-2 py-0.5 border-violet-400/50 text-violet-500">NADCAP</Badge>
+            <Badge variant="outline" className="text-xs px-2 py-0.5 border-amber-400/50 text-amber-500">ITAR Controlled</Badge>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+            {[
+              { label: "Production Phases", value: "11", icon: Layers, color: "text-blue-500" },
+              { label: "Critical Gates", value: "5", icon: Shield, color: "text-red-500" },
+              { label: "Defined Roles", value: "11", icon: Users, color: "text-emerald-500" },
+              { label: "Assessment Questions", value: "275", icon: BookOpen, color: "text-violet-500" },
+            ].map((stat, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }}>
+                <Card className="overflow-visible">
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-md bg-muted/50 flex items-center justify-center ${stat.color}`}>
+                      <stat.icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold leading-none">{stat.value}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         <FlowchartMini />
@@ -1895,13 +1928,23 @@ export default function Infographic() {
                                           </div>
                                         ))}
                                       </div>
-                                      <div className="flex flex-wrap gap-1 mt-2">
-                                        <span className="text-xs font-semibold text-muted-foreground mr-1">Active in:</span>
-                                        {role.phases.map(phaseId => (
-                                          <Badge key={phaseId} variant="secondary" className="text-xs px-1.5 py-0">
-                                            P{phaseId}
-                                          </Badge>
-                                        ))}
+                                      <div className="mt-3">
+                                        <p className="text-xs font-semibold text-muted-foreground mb-1.5">Phase Coverage</p>
+                                        <div className="flex gap-0.5">
+                                          {Array.from({ length: 11 }, (_, i) => i + 1).map(phaseId => (
+                                            <div
+                                              key={phaseId}
+                                              className={`h-6 flex-1 rounded-sm flex items-center justify-center text-xs font-bold transition-colors ${
+                                                role.phases.includes(phaseId)
+                                                  ? `${role.color} text-white`
+                                                  : "bg-muted/30 text-muted-foreground/30"
+                                              }`}
+                                              title={`Phase ${phaseId}: ${phases[phaseId - 1]?.title}`}
+                                            >
+                                              {phaseId}
+                                            </div>
+                                          ))}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -1938,9 +1981,11 @@ export default function Infographic() {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Card className="overflow-visible" data-testid={`critical-point-${index}`}>
+                      <div className="h-1 w-full rounded-t-md bg-gradient-to-r from-red-500 via-orange-500 to-red-600" />
                       <CardContent className="p-4 flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-md bg-destructive/10 flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-5 h-5 text-destructive" />
+                        <div className="relative w-12 h-12 rounded-md bg-gradient-to-br from-red-500/20 to-orange-500/10 flex items-center justify-center flex-shrink-0 border border-destructive/20">
+                          <Icon className="w-6 h-6 text-destructive" />
+                          <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-white text-xs font-bold flex items-center justify-center">{index + 1}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -1962,9 +2007,6 @@ export default function Infographic() {
                               If this fails: {cp.failureImpact}
                             </p>
                           </div>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-base font-bold text-destructive">{index + 1}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -2006,7 +2048,7 @@ export default function Infographic() {
                       <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-1.5">Before Outsourcing</p>
                       <ul className="space-y-1">
                         {["Outgoing QC inspection mandatory", "Part count verification mandatory"].map((item, i) => (
-                          <li key={i} className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                          <li key={i} className="text-xs text-muted-foreground flex items-center gap-1.5">
                             <AlertTriangle className="w-3 h-3 text-orange-500 flex-shrink-0" />
                             {item}
                           </li>
@@ -2017,7 +2059,7 @@ export default function Infographic() {
                       <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-1.5">After Outsourcing</p>
                       <ul className="space-y-1">
                         {["Incoming QC inspection mandatory", "Supplier certification verification", "Traceability maintained mandatory"].map((item, i) => (
-                          <li key={i} className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                          <li key={i} className="text-xs text-muted-foreground flex items-center gap-1.5">
                             <AlertTriangle className="w-3 h-3 text-orange-500 flex-shrink-0" />
                             {item}
                           </li>
@@ -2026,7 +2068,7 @@ export default function Infographic() {
                     </div>
                   </div>
                   <div className="mt-2 p-2 rounded bg-destructive/10 border border-destructive/20">
-                    <p className="text-[11px] font-medium text-destructive text-center">
+                    <p className="text-xs font-medium text-destructive text-center">
                       Parts cannot skip QC at any stage.
                     </p>
                   </div>
@@ -2076,16 +2118,24 @@ export default function Infographic() {
                                   <span className="text-sm font-semibold">{role.title}</span>
                                   <Badge variant="outline" className="text-xs px-1 py-0">{role.shortTitle}</Badge>
                                 </div>
-                                <div className="flex flex-wrap gap-1 mb-2">
-                                  <span className="text-xs text-muted-foreground font-semibold mr-1">Phases:</span>
-                                  {role.phases.map(pid => {
-                                    const phase = phases.find(p => p.id === pid);
-                                    return (
-                                      <Badge key={pid} variant="secondary" className="text-xs px-1 py-0">
-                                        P{pid}: {phase?.title.split(" ").slice(0, 2).join(" ")}
-                                      </Badge>
-                                    );
-                                  })}
+                                <div className="mb-2">
+                                  <div className="flex gap-0.5">
+                                    {Array.from({ length: 11 }, (_, i) => i + 1).map(phaseId => {
+                                      const active = role.phases.includes(phaseId);
+                                      const phase = phases.find(p => p.id === phaseId);
+                                      return (
+                                        <div
+                                          key={phaseId}
+                                          className={`h-5 flex-1 rounded-sm flex items-center justify-center text-[10px] font-bold ${
+                                            active ? `${role.color} text-white` : "bg-muted/20 text-muted-foreground/20"
+                                          }`}
+                                          title={active ? `Phase ${phaseId}: ${phase?.title}` : `Phase ${phaseId}`}
+                                        >
+                                          {phaseId}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
                                 <div className="flex flex-wrap gap-1">
                                   <span className="text-xs text-muted-foreground font-semibold mr-1">Deliverables:</span>
