@@ -161,6 +161,7 @@ const phases = [
     borderColor: "border-amber-500/30",
     textColor: "text-amber-600 dark:text-amber-400",
     critical: true,
+    skippableWhenOutsourced: true,
     steps: [
       {
         name: "Incoming Verification",
@@ -193,6 +194,7 @@ const phases = [
     bgColor: "bg-violet-500/10 dark:bg-violet-500/20",
     borderColor: "border-violet-500/30",
     textColor: "text-violet-600 dark:text-violet-400",
+    skippableWhenOutsourced: true,
     steps: [
       {
         name: "5.1 - Strategy Review First",
@@ -267,6 +269,7 @@ const phases = [
     bgColor: "bg-rose-500/10 dark:bg-rose-500/20",
     borderColor: "border-rose-500/30",
     textColor: "text-rose-600 dark:text-rose-400",
+    skippableWhenOutsourced: true,
     steps: [
       {
         name: "Setup Checklist",
@@ -298,6 +301,7 @@ const phases = [
     bgColor: "bg-cyan-500/10 dark:bg-cyan-500/20",
     borderColor: "border-cyan-500/30",
     textColor: "text-cyan-600 dark:text-cyan-400",
+    skippableWhenOutsourced: true,
     steps: [
       {
         name: "Production Controls",
@@ -315,37 +319,98 @@ const phases = [
   {
     id: 8,
     title: "Outsourced Process Control",
-    subtitle: "Critical supplier management",
+    subtitle: "Two models: partial outsource (process-level) and full outsource (complete job)",
     icon: ExternalLink,
     color: "from-orange-500 to-orange-600",
     bgColor: "bg-orange-500/10 dark:bg-orange-500/20",
     borderColor: "border-orange-500/30",
     textColor: "text-orange-600 dark:text-orange-400",
     critical: true,
-    steps: [
+    steps: [],
+    outsourceModels: [
       {
-        name: "Before Sending to Supplier",
-        details: [
-          "Quality Engineer performs outgoing inspection",
-          "Outgoing inspection report created",
-          "Part count verified",
-          "Stores logs movement to supplier",
+        type: "partial",
+        title: "Model A: Partial Outsource",
+        description: "Specific processes sent to supplier while job remains in-house",
+        steps: [
+          {
+            name: "Before Sending to Supplier",
+            details: [
+              "Quality Engineer performs outgoing inspection",
+              "Outgoing inspection report created",
+              "Part count verified",
+              "Stores logs movement to supplier",
+            ],
+          },
+          {
+            name: "Upon Return from Supplier",
+            details: [
+              "Incoming inspection mandatory",
+              "Certification validity verified (CoC, MTC, NADCAP cert as applicable)",
+              "Part count verified",
+              "Part condition checked",
+              "Critical dimensions verified if affected by process",
+            ],
+            critical: true,
+          },
         ],
+        examples: ["Heat treatment", "Anodizing", "NADCAP coating", "Plating", "Wirecut / EDM"],
       },
       {
-        name: "Upon Return from Supplier",
-        details: [
-          "Incoming inspection mandatory",
-          "Certification validity verified",
-          "Part count verified",
-          "Part condition checked",
-          "Critical dimensions verified if affected",
+        type: "full",
+        title: "Model B: Full Outsource",
+        description: "Entire job outsourced to one or more suppliers — phases 4-7 skipped",
+        steps: [
+          {
+            name: "B1 - QCP Validation & Approval",
+            details: [
+              "Quality Control Plan must be validated for outsource scope",
+              "QCP approved by Quality Engineering before order placement",
+              "QCP must cover: incoming material, in-process, final inspection requirements",
+            ],
+            critical: true,
+          },
+          {
+            name: "B2 - Supplier Notification & Order Placement",
+            details: [
+              "Project Engineer (not commercial team) places order with supplier",
+              "Supplier receives: QCP, latest revision drawings, special requirements",
+              "All necessary actions communicated clearly to supplier",
+              "Confirm supplier acknowledgment of all requirements",
+            ],
+          },
+          {
+            name: "B3 - Receiving & Incoming Inspection",
+            details: [
+              "Full incoming inspection per QCP",
+              "All certifications collected and verified",
+              "Part count, condition, dimensions checked",
+              "QE sign-off required before acceptance",
+            ],
+            critical: true,
+          },
         ],
-        critical: true,
+        examples: ["Complete machined assemblies", "Fabrication sub-assemblies", "Specialized processes (casting, forging)"],
       },
     ],
-    examples: ["Heat treatment", "Anodizing", "NADCAP coating", "Wirecut operations", "EDM operations"],
-    gate: "Parts CANNOT return to production without QC approval. Traceability must remain intact.",
+    certifications: [
+      { name: "Certificate of Conformance (CoC)", required: "Always", description: "Supplier declares parts meet all requirements" },
+      { name: "Material Test Certificate (MTC)", required: "When material supplied", description: "Chemical & mechanical properties verification" },
+      { name: "NADCAP Certificate", required: "Special processes", description: "Heat treat, plating, NDT, welding per NADCAP" },
+      { name: "First Article Inspection (FAI)", required: "New parts / new suppliers", description: "AS9102 compliant dimensional report" },
+      { name: "Process Certificate", required: "As specified", description: "Hardness, conductivity, coating thickness reports" },
+    ],
+    qeSignoff: {
+      title: "Quality Engineering Sign-Off Required",
+      description: "No outsourced parts may enter production or be shipped without QE/QC formal sign-off",
+      checkpoints: [
+        "All required certifications collected and valid",
+        "Incoming inspection report completed and passed",
+        "Traceability maintained through outsource cycle",
+        "Non-conformances documented and dispositioned",
+      ],
+    },
+    gate: "Parts CANNOT return to production or ship without QE/QC sign-off. Traceability must remain intact.",
   },
   {
     id: 9,
@@ -465,6 +530,11 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                 {phase.critical && (
                   <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
                     CRITICAL
+                  </Badge>
+                )}
+                {"skippableWhenOutsourced" in phase && phase.skippableWhenOutsourced && (
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-orange-400/50 text-orange-500">
+                    SKIP IF FULLY OUTSOURCED
                   </Badge>
                 )}
               </div>
@@ -677,7 +747,88 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                     </div>
                   )}
 
-                  {"examples" in phase && phase.examples && (
+                  {"outsourceModels" in phase && phase.outsourceModels && (
+                    <div className="space-y-3" data-testid="outsource-models">
+                      {phase.outsourceModels.map((model: any, mi: number) => (
+                        <div key={mi} className={`rounded-md p-3 border ${model.type === "partial" ? "bg-cyan-500/5 dark:bg-cyan-500/10 border-cyan-500/20" : "bg-orange-500/5 dark:bg-orange-500/10 border-orange-500/20"}`} data-testid={`outsource-model-${model.type}`}>
+                          <h4 className={`font-semibold text-xs mb-0.5 ${model.type === "partial" ? "text-cyan-600 dark:text-cyan-400" : "text-orange-600 dark:text-orange-400"}`}>
+                            {model.title}
+                          </h4>
+                          <p className="text-[10px] text-muted-foreground mb-2">{model.description}</p>
+
+                          <div className="space-y-2">
+                            {model.steps.map((step: any, si: number) => (
+                              <div key={si} className="space-y-0.5">
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`text-[10px] font-semibold ${step.critical ? "text-destructive" : "text-foreground"}`}>
+                                    {step.name}
+                                  </span>
+                                  {step.critical && (
+                                    <Badge variant="destructive" className="text-[8px] px-1 py-0">CRITICAL</Badge>
+                                  )}
+                                </div>
+                                <ul className="space-y-0.5 ml-3">
+                                  {step.details.map((d: string, di: number) => (
+                                    <li key={di} className="text-[10px] text-muted-foreground flex items-start gap-1.5">
+                                      <ChevronRight className="w-2.5 h-2.5 flex-shrink-0 mt-0.5" />
+                                      <span>{d}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+
+                          {model.examples && (
+                            <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-dashed border-muted-foreground/10">
+                              <span className="text-[9px] font-semibold text-muted-foreground mr-1">Examples:</span>
+                              {model.examples.map((ex: string, ei: number) => (
+                                <Badge key={ei} variant="secondary" className="text-[9px]">{ex}</Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {"certifications" in phase && phase.certifications && (
+                    <div className="rounded-md p-3 bg-sky-500/5 dark:bg-sky-500/10 border border-sky-500/20" data-testid="certifications">
+                      <h4 className="font-medium text-xs text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-1.5">
+                        <Shield className="w-3.5 h-3.5" />
+                        Required Certifications
+                      </h4>
+                      <div className="space-y-1.5">
+                        {phase.certifications.map((cert: any, ci: number) => (
+                          <div key={ci} className="grid grid-cols-[1fr_auto_2fr] gap-2 items-start text-[10px]">
+                            <span className="font-medium">{cert.name}</span>
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 whitespace-nowrap">{cert.required}</Badge>
+                            <span className="text-muted-foreground">{cert.description}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {"qeSignoff" in phase && phase.qeSignoff && (
+                    <div className="rounded-md p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20" data-testid="qe-signoff">
+                      <h4 className="font-medium text-xs text-destructive mb-1 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        {phase.qeSignoff.title}
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground mb-2">{phase.qeSignoff.description}</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                        {phase.qeSignoff.checkpoints.map((cp: string, ci: number) => (
+                          <div key={ci} className="flex items-start gap-1.5 text-[10px]">
+                            <CheckCircle2 className="w-3 h-3 text-destructive flex-shrink-0 mt-0.5" />
+                            <span>{cp}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {"examples" in phase && !("outsourceModels" in phase) && phase.examples && (
                     <div className="flex flex-wrap gap-1">
                       <span className="text-[10px] font-semibold text-muted-foreground mr-1">Examples:</span>
                       {phase.examples.map((e, ei) => (
@@ -711,10 +862,15 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
             transition={{ delay: index * 0.06 + 0.3 }}
             className="flex flex-col items-center"
           >
-            {phase.id === 7 ? (
+            {phase.id === 3 ? (
               <div className="flex flex-col items-center gap-0.5">
                 <GitFork className="w-4 h-4 text-orange-400" />
-                <span className="text-[8px] text-orange-500 font-medium">In-house or Outsource</span>
+                <span className="text-[8px] text-orange-500 font-medium">In-house path OR skip to Phase 8 if fully outsourced</span>
+              </div>
+            ) : phase.id === 7 ? (
+              <div className="flex flex-col items-center gap-0.5">
+                <GitFork className="w-4 h-4 text-orange-400" />
+                <span className="text-[8px] text-orange-500 font-medium">Partial outsource or continue in-house</span>
               </div>
             ) : phase.id === 8 ? (
               <div className="flex flex-col items-center gap-0.5">
@@ -792,70 +948,59 @@ function FlowchartMini() {
               <FlowNode label="Mfg Strategy" color="bg-indigo-500" delay={0.2} badge="CRITICAL" />
               <FlowArrow delay={0.25} />
               <FlowNode label="QC Plan" color="bg-emerald-500" delay={0.3} icon={ClipboardCheck} />
-              <FlowArrow delay={0.35} />
-              <FlowNode label="Material" color="bg-amber-500" delay={0.4} icon={Package} />
-            </div>
-
-            <div className="flex justify-center">
-              <FlowArrow direction="down" delay={0.45} />
-            </div>
-
-            <div className="flex items-center gap-1.5 flex-wrap justify-center">
-              <FlowNode label="Programming" color="bg-violet-500" delay={0.5} icon={Layers} />
-              <FlowArrow delay={0.55} />
-              <FlowNode label="Setup & 1st Part" color="bg-rose-500" delay={0.6} icon={Wrench} />
-              <FlowArrow delay={0.65} />
-              <FlowNode label="Production" color="bg-cyan-500" delay={0.7} icon={Factory} />
             </div>
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.75 }}
+              transition={{ delay: 0.45 }}
               className="relative border-2 border-dashed border-orange-400/40 dark:border-orange-500/30 rounded-lg p-3"
             >
               <div className="absolute -top-2.5 left-4 bg-background px-2">
                 <span className="text-[9px] font-semibold text-orange-500 flex items-center gap-1">
-                  <GitFork className="w-3 h-3" /> ROUTING DECISION
+                  <GitFork className="w-3 h-3" /> OUTSOURCE ROUTING DECISION
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-1">
                 <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/20"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/20 sm:col-span-2"
                 >
-                  <span className="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">In-House Path</span>
+                  <span className="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">In-House / Partial Outsource Path</span>
                   <div className="flex items-center gap-1.5 flex-wrap justify-center">
-                    <FlowNode label="In-House QC" color="bg-cyan-600" delay={0.85} icon={Search} />
-                    <FlowArrow delay={0.9} />
-                    <FlowNode label="Next Op" color="bg-cyan-500" delay={0.95} icon={Cog} />
+                    <FlowNode label="Material" color="bg-amber-500" delay={0.55} icon={Package} />
+                    <FlowArrow delay={0.58} />
+                    <FlowNode label="Programming" color="bg-violet-500" delay={0.6} icon={Layers} />
+                    <FlowArrow delay={0.63} />
+                    <FlowNode label="Setup" color="bg-rose-500" delay={0.65} icon={Wrench} />
+                    <FlowArrow delay={0.68} />
+                    <FlowNode label="Production" color="bg-cyan-500" delay={0.7} icon={Factory} />
                   </div>
                   <div className="flex items-center gap-1 text-[8px] text-muted-foreground">
                     <RotateCcw className="w-2.5 h-2.5" />
-                    <span>Repeat for each in-house operation</span>
+                    <span>Partial outsource sends specific ops to supplier, returns for next step</span>
                   </div>
                 </motion.div>
 
                 <motion.div
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
                   className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20"
                 >
-                  <span className="text-[9px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Outsource Path</span>
-                  <div className="flex items-center gap-1.5 flex-wrap justify-center">
-                    <FlowNode label="Outgoing QC" color="bg-orange-500" delay={0.85} icon={ExternalLink} />
-                    <FlowArrow delay={0.9} />
-                    <FlowNode label="Supplier" color="bg-orange-600" delay={0.95} />
-                    <FlowArrow delay={1.0} />
-                    <FlowNode label="Incoming QC" color="bg-orange-500" delay={1.05} icon={Search} badge="QC" />
+                  <span className="text-[9px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Full Outsource Path</span>
+                  <div className="flex flex-col items-center gap-1">
+                    <FlowNode label="QCP Validate" color="bg-orange-500" delay={0.55} icon={ClipboardCheck} badge="QE" />
+                    <FlowArrow direction="down" delay={0.58} />
+                    <FlowNode label="PE Orders" color="bg-orange-600" delay={0.6} icon={ExternalLink} />
+                    <FlowArrow direction="down" delay={0.63} />
+                    <FlowNode label="Incoming QC" color="bg-orange-500" delay={0.65} icon={Search} badge="QC" />
                   </div>
-                  <div className="flex items-center gap-1 text-[8px] text-muted-foreground">
-                    <RotateCcw className="w-2.5 h-2.5" />
-                    <span>Returns to production after QC pass</span>
+                  <div className="text-[8px] text-orange-500 font-medium mt-1 text-center">
+                    Phases 4-7 skipped
                   </div>
                 </motion.div>
               </div>
@@ -863,11 +1008,11 @@ function FlowchartMini() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.1 }}
+                transition={{ delay: 0.75 }}
                 className="mt-2 text-center"
               >
                 <span className="text-[8px] text-muted-foreground italic">
-                  Parts can alternate between in-house and outsource paths multiple times per job
+                  Partial outsource: parts alternate between in-house and supplier. Full outsource: entire job goes to supplier(s).
                 </span>
               </motion.div>
             </motion.div>
@@ -876,7 +1021,7 @@ function FlowchartMini() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.15 }}
+                transition={{ delay: 0.8 }}
                 className="flex items-center gap-1"
               >
                 <GitMerge className="w-3.5 h-3.5 text-teal-500" />
@@ -885,20 +1030,20 @@ function FlowchartMini() {
             </div>
 
             <div className="flex items-center gap-1.5 flex-wrap justify-center">
-              <FlowNode label="Final QC" color="bg-teal-500" delay={1.2} icon={Search} badge="CRITICAL" />
-              <FlowArrow delay={1.25} />
-              <FlowNode label="Documentation" color="bg-sky-500" delay={1.3} icon={FileText} />
-              <FlowArrow delay={1.35} />
-              <FlowNode label="Packaging" color="bg-green-500" delay={1.4} icon={Package} />
-              <FlowArrow delay={1.45} />
-              <FlowNode label="Dispatch" color="bg-green-600" delay={1.5} icon={Truck} />
+              <FlowNode label="Final QC" color="bg-teal-500" delay={0.85} icon={Search} badge="CRITICAL" />
+              <FlowArrow delay={0.88} />
+              <FlowNode label="Documentation" color="bg-sky-500" delay={0.9} icon={FileText} />
+              <FlowArrow delay={0.93} />
+              <FlowNode label="Packaging" color="bg-green-500" delay={0.95} icon={Package} />
+              <FlowArrow delay={0.98} />
+              <FlowNode label="Dispatch" color="bg-green-600" delay={1.0} icon={Truck} />
             </div>
           </div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.6 }}
+            transition={{ delay: 1.1 }}
             className="flex flex-wrap items-center justify-center gap-3 mt-4 pt-3 border-t border-dashed"
           >
             <div className="flex items-center gap-1.5">
@@ -907,11 +1052,11 @@ function FlowchartMini() {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-orange-500" />
-              <span className="text-[9px] text-muted-foreground">Outsource</span>
+              <span className="text-[9px] text-muted-foreground">Full Outsource</span>
             </div>
             <div className="flex items-center gap-1.5">
               <GitFork className="w-3 h-3 text-orange-400" />
-              <span className="text-[9px] text-muted-foreground">Split Point</span>
+              <span className="text-[9px] text-muted-foreground">Routing Decision</span>
             </div>
             <div className="flex items-center gap-1.5">
               <GitMerge className="w-3 h-3 text-teal-500" />
