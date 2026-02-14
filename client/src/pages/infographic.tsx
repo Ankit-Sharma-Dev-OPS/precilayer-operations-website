@@ -493,9 +493,9 @@ const phases = [
 ];
 
 const criticalControlPoints = [
-  { name: "Material Traceability", icon: Package, description: "Every material must have verified heat numbers, certifications, and internal traceability IDs before use.", ownerRoles: ["proc", "qe"], phase: 4, failureImpact: "Unverified material enters production — aerospace/medical compliance breach, full batch rejection" },
   { name: "Manufacturing Strategy Definition", icon: Cog, description: "Complete machining strategy, datum definition, and workholding plan must be approved before programming begins.", ownerRoles: ["pe", "pm"], phase: 2, failureImpact: "Programming starts without strategy — wrong fixtures, wrong datums, entire job scrapped" },
   { name: "Quality Control Plan Definition", icon: ClipboardCheck, description: "Formal inspection requirements for every stage must be defined with inspection levels and frequencies.", ownerRoles: ["qe", "pe"], phase: 3, failureImpact: "No QCP means no inspection gates — defects pass undetected to customer" },
+  { name: "Material Traceability", icon: Package, description: "Every material must have verified heat numbers, certifications, and internal traceability IDs before use.", ownerRoles: ["proc", "qe"], phase: 4, failureImpact: "Unverified material enters production — aerospace/medical compliance breach, full batch rejection" },
   { name: "Outsource Incoming Inspection", icon: ExternalLink, description: "All parts returning from suppliers must pass incoming QC with certification verification before re-entering production.", ownerRoles: ["sqe", "qe"], phase: 8, failureImpact: "Uninspected outsource parts re-enter production — unverified certifications, NADCAP breach" },
   { name: "Final Inspection Approval", icon: CheckCircle2, description: "Complete final inspection per Quality Control Plan must be passed before parts can be released for dispatch.", ownerRoles: ["qe"], phase: 9, failureImpact: "Non-conforming parts shipped to customer — warranty claims, regulatory action" },
 ];
@@ -1860,13 +1860,13 @@ export default function Infographic() {
               <Factory className="w-3.5 h-3.5 mr-1.5" />
               <span className="hidden sm:inline">Flow</span>
             </TabsTrigger>
-            <TabsTrigger value="critical" data-testid="tab-critical">
-              <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
-              <span className="hidden sm:inline">Critical</span>
-            </TabsTrigger>
             <TabsTrigger value="matrix" data-testid="tab-matrix">
               <Target className="w-3.5 h-3.5 mr-1.5" />
               <span className="hidden sm:inline">Matrix</span>
+            </TabsTrigger>
+            <TabsTrigger value="critical" data-testid="tab-critical">
+              <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
+              <span className="hidden sm:inline">Critical</span>
             </TabsTrigger>
             <TabsTrigger value="quiz" data-testid="tab-quiz">
               <BookOpen className="w-3.5 h-3.5 mr-1.5" />
@@ -1993,7 +1993,7 @@ export default function Infographic() {
             >
               <div className="text-center mb-4">
                 <h3 className="text-xl font-bold" data-testid="text-critical-title">5 Critical Control Points</h3>
-                <p className="text-sm text-muted-foreground">These points guarantee total quality control. They must NEVER fail.</p>
+                <p className="text-sm text-muted-foreground">Quality gates ordered by production phase — each must pass before the next stage begins.</p>
               </div>
               {criticalControlPoints.map((cp, index) => {
                 const Icon = cp.icon;
