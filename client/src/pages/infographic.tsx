@@ -863,30 +863,30 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
           <div className="flex items-center gap-4 p-4">
             <div className={`relative flex-shrink-0 w-12 h-12 rounded-md bg-gradient-to-br ${phase.color} flex items-center justify-center`}>
               <Icon className="w-6 h-6 text-white" />
-              <span className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-foreground text-background text-xs font-bold flex items-center justify-center">
+              <span className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-foreground text-background text-sm font-bold flex items-center justify-center">
                 {phase.id}
               </span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-semibold text-sm leading-tight">{phase.title}</h3>
+                <h3 className="font-semibold text-base leading-tight">{phase.title}</h3>
                 {phase.critical && (
-                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                  <Badge variant="destructive" className="text-sm px-1.5 py-0">
                     CRITICAL
                   </Badge>
                 )}
                 {"skippableWhenOutsourced" in phase && phase.skippableWhenOutsourced && (
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-orange-400/50 text-orange-500">
+                  <Badge variant="outline" className="text-sm px-1.5 py-0 border-orange-400/50 text-orange-500">
                     SKIP IF FULLY OUTSOURCED
                   </Badge>
                 )}
                 {roles.filter(r => r.phases.includes(phase.id)).map(role => (
-                  <Badge key={role.id} variant="outline" className={`text-[8px] px-1 py-0 ${role.textColor}`} data-testid={`role-badge-${role.id}-phase-${phase.id}`}>
+                  <Badge key={role.id} variant="outline" className={`text-xs px-1 py-0 ${role.textColor}`} data-testid={`role-badge-${role.id}-phase-${phase.id}`}>
                     {role.shortTitle}
                   </Badge>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">{phase.subtitle}</p>
+              <p className="text-sm text-muted-foreground mt-0.5">{phase.subtitle}</p>
             </div>
             <motion.div
               animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -912,14 +912,14 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                     <div key={si} className={`rounded-md p-3 ${phase.bgColor}`}>
                       <div className="flex items-center gap-2 mb-2">
                         <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-br ${phase.color}`} />
-                        <h4 className={`font-medium text-xs ${phase.textColor}`}>{step.name}</h4>
+                        <h4 className={`font-medium text-sm ${phase.textColor}`}>{step.name}</h4>
                         {"critical" in step && step.critical && (
                           <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                         )}
                       </div>
                       <ul className="space-y-1 ml-4">
                         {step.details.map((d, di) => (
-                          <li key={di} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                          <li key={di} className="text-sm text-muted-foreground flex items-start gap-1.5">
                             <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-muted-foreground/50" />
                             {d}
                           </li>
@@ -927,10 +927,10 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                       </ul>
                       {"jobFolder" in step && step.jobFolder && (
                         <div className="mt-2 p-2 rounded bg-background/50 dark:bg-background/30">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Job Folder Must Contain</p>
+                          <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-1">Job Folder Must Contain</p>
                           <div className="flex flex-wrap gap-1">
                             {step.jobFolder.map((item, i) => (
-                              <Badge key={i} variant="secondary" className="text-[10px]">{item}</Badge>
+                              <Badge key={i} variant="secondary" className="text-sm">{item}</Badge>
                             ))}
                           </div>
                         </div>
@@ -939,10 +939,10 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                         <div className="mt-2 space-y-1.5">
                           {Object.entries(step.responsibilities as Record<string, string[]>).map(([role, tasks]: [string, string[]]) => (
                             <div key={role} className="p-2 rounded bg-background/50 dark:bg-background/30">
-                              <p className="text-[10px] font-semibold text-muted-foreground">{role}</p>
+                              <p className="text-sm font-semibold text-muted-foreground">{role}</p>
                               <ul className="mt-0.5">
                                 {tasks.map((t: string, ti: number) => (
-                                  <li key={ti} className="text-[10px] text-muted-foreground/80 flex items-center gap-1">
+                                  <li key={ti} className="text-sm text-muted-foreground/80 flex items-center gap-1">
                                     <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" />
                                     {t}
                                   </li>
@@ -956,10 +956,10 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                         <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
                           {Object.entries(step.classifications).map(([cat, items]) => (
                             <div key={cat} className="p-2 rounded bg-background/50 dark:bg-background/30">
-                              <p className="text-[10px] font-semibold text-muted-foreground mb-1">{cat} Classification</p>
+                              <p className="text-sm font-semibold text-muted-foreground mb-1">{cat} Classification</p>
                               <ul className="space-y-0.5">
                                 {items.map((item, i) => (
-                                  <li key={i} className="text-[10px] text-muted-foreground/80 flex items-center gap-1">
+                                  <li key={i} className="text-sm text-muted-foreground/80 flex items-center gap-1">
                                     <div className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                                     {item}
                                   </li>
@@ -974,16 +974,16 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"inspectionLevels" in phase && phase.inspectionLevels && (
                     <div className="rounded-md p-3 bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20">
-                      <h4 className="font-medium text-xs text-emerald-600 dark:text-emerald-400 mb-2">Inspection Method Classification</h4>
+                      <h4 className="font-medium text-sm text-emerald-600 dark:text-emerald-400 mb-2">Inspection Method Classification</h4>
                       <div className="space-y-1.5">
                         {phase.inspectionLevels.map((il) => (
                           <div key={il.level} className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">
                               {il.level}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <span className="text-xs font-medium">{il.name}</span>
-                              <span className="text-[10px] text-muted-foreground ml-1.5">{il.description}</span>
+                              <span className="text-sm font-medium">{il.name}</span>
+                              <span className="text-sm text-muted-foreground ml-1.5">{il.description}</span>
                             </div>
                           </div>
                         ))}
@@ -993,24 +993,24 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"numberingGuide" in phase && phase.numberingGuide && (
                     <div className="rounded-md p-3 bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20" data-testid="numbering-guide">
-                      <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-2">Job Number Breakdown</h4>
+                      <h4 className="font-medium text-sm text-violet-600 dark:text-violet-400 mb-2">Job Number Breakdown</h4>
                       <div className="flex items-end gap-0.5 justify-center mb-2">
                         {phase.numberingGuide.segments.map((seg, si) => (
                           <div key={si} className="flex flex-col items-center">
-                            <span className="text-[8px] text-muted-foreground mb-0.5">{seg.label}</span>
-                            <span className="font-mono text-sm font-bold bg-violet-500/15 dark:bg-violet-500/25 px-1.5 py-0.5 rounded text-violet-700 dark:text-violet-300">{seg.part}</span>
+                            <span className="text-xs text-muted-foreground mb-0.5">{seg.label}</span>
+                            <span className="font-mono text-base font-bold bg-violet-500/15 dark:bg-violet-500/25 px-1.5 py-0.5 rounded text-violet-700 dark:text-violet-300">{seg.part}</span>
                           </div>
                         ))}
                       </div>
-                      <div className="flex items-center justify-center gap-3 text-[10px]">
+                      <div className="flex items-center justify-center gap-3 text-sm">
                         <div className="flex items-center gap-1">
                           <span className="font-mono font-semibold text-foreground">{phase.numberingGuide.partExample}</span>
-                          <Badge variant="outline" className="text-[8px] px-1 py-0">{phase.numberingGuide.partLabel}</Badge>
+                          <Badge variant="outline" className="text-xs px-1 py-0">{phase.numberingGuide.partLabel}</Badge>
                         </div>
                         <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
                         <div className="flex items-center gap-1">
                           <span className="font-mono font-semibold text-foreground">{phase.numberingGuide.setupExample}</span>
-                          <Badge variant="outline" className="text-[8px] px-1 py-0">{phase.numberingGuide.setupLabel}</Badge>
+                          <Badge variant="outline" className="text-xs px-1 py-0">{phase.numberingGuide.setupLabel}</Badge>
                         </div>
                       </div>
                     </div>
@@ -1018,7 +1018,7 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"folderStructure" in phase && phase.folderStructure && (
                     <div className="rounded-md p-3 bg-violet-500/5 dark:bg-violet-500/10 border border-violet-500/20" data-testid="folder-structure">
-                      <h4 className="font-medium text-xs text-violet-600 dark:text-violet-400 mb-3 flex items-center gap-1.5">
+                      <h4 className="font-medium text-sm text-violet-600 dark:text-violet-400 mb-3 flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5" />
                         CAM Folder Structure
                       </h4>
@@ -1028,10 +1028,10 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                           <div className="w-7 h-7 rounded-md bg-violet-500/20 flex items-center justify-center flex-shrink-0">
                             <Layers className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                           </div>
-                          <span className="font-mono text-xs font-semibold text-violet-600 dark:text-violet-400">
+                          <span className="font-mono text-sm font-semibold text-violet-600 dark:text-violet-400">
                             {phase.folderStructure.project}/
                           </span>
-                          <span className="text-[9px] text-muted-foreground">Project folder</span>
+                          <span className="text-xs text-muted-foreground">Project folder</span>
                         </div>
 
                         {phase.folderStructure.parts.map((part, pi) => (
@@ -1042,11 +1042,11 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                             </div>
                             <div className="ml-5 flex flex-wrap gap-1.5">
                               {part.setups.map((setup, si) => (
-                                <Badge key={si} variant="outline" className="text-[9px] font-mono px-1.5 py-0.5">
+                                <Badge key={si} variant="outline" className="text-xs font-mono px-1.5 py-0.5">
                                   {setup}
                                 </Badge>
                               ))}
-                              <Badge variant="secondary" className="text-[9px] px-1.5 py-0.5">
+                              <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
                                 + Process Sheet
                               </Badge>
                             </div>
@@ -1054,7 +1054,7 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                         ))}
                       </div>
 
-                      <p className="text-[9px] text-muted-foreground mt-2.5 italic">
+                      <p className="text-xs text-muted-foreground mt-2.5 italic">
                         Total part folders must equal total manufacturing parts in the order
                       </p>
                     </div>
@@ -1062,16 +1062,16 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"processSheet" in phase && phase.processSheet && (
                     <div className="rounded-md p-3 bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20" data-testid="process-sheet-info">
-                      <h4 className="font-medium text-xs text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
+                      <h4 className="font-medium text-sm text-amber-600 dark:text-amber-400 mb-1.5 flex items-center gap-1.5">
                         <ClipboardCheck className="w-3.5 h-3.5" />
                         {phase.processSheet.description}
                       </h4>
-                      <p className="text-[10px] text-muted-foreground mb-2">
+                      <p className="text-sm text-muted-foreground mb-2">
                         {phase.processSheet.importance}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {phase.processSheet.contains.map((item: string, ci: number) => (
-                          <Badge key={ci} variant="outline" className="text-[9px]">{item}</Badge>
+                          <Badge key={ci} variant="outline" className="text-xs">{item}</Badge>
                         ))}
                       </div>
                     </div>
@@ -1079,18 +1079,18 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"frequencies" in phase && phase.frequencies && (
                     <div className="flex flex-wrap gap-1">
-                      <span className="text-[10px] font-semibold text-muted-foreground mr-1">Frequency:</span>
+                      <span className="text-sm font-semibold text-muted-foreground mr-1">Frequency:</span>
                       {phase.frequencies.map((f, fi) => (
-                        <Badge key={fi} variant="outline" className="text-[10px]">{f}</Badge>
+                        <Badge key={fi} variant="outline" className="text-sm">{f}</Badge>
                       ))}
                     </div>
                   )}
 
                   {"tagging" in phase && phase.tagging && (
                     <div className="flex flex-wrap gap-1">
-                      <span className="text-[10px] font-semibold text-muted-foreground mr-1">Material Tag:</span>
+                      <span className="text-sm font-semibold text-muted-foreground mr-1">Material Tag:</span>
                       {phase.tagging.map((t, ti) => (
-                        <Badge key={ti} variant="outline" className="text-[10px]">{t}</Badge>
+                        <Badge key={ti} variant="outline" className="text-sm">{t}</Badge>
                       ))}
                     </div>
                   )}
@@ -1099,25 +1099,25 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                     <div className="space-y-3" data-testid="outsource-models">
                       {phase.outsourceModels.map((model: any, mi: number) => (
                         <div key={mi} className={`rounded-md p-3 border ${model.type === "partial" ? "bg-cyan-500/5 dark:bg-cyan-500/10 border-cyan-500/20" : "bg-orange-500/5 dark:bg-orange-500/10 border-orange-500/20"}`} data-testid={`outsource-model-${model.type}`}>
-                          <h4 className={`font-semibold text-xs mb-0.5 ${model.type === "partial" ? "text-cyan-600 dark:text-cyan-400" : "text-orange-600 dark:text-orange-400"}`}>
+                          <h4 className={`font-semibold text-sm mb-0.5 ${model.type === "partial" ? "text-cyan-600 dark:text-cyan-400" : "text-orange-600 dark:text-orange-400"}`}>
                             {model.title}
                           </h4>
-                          <p className="text-[10px] text-muted-foreground mb-2">{model.description}</p>
+                          <p className="text-sm text-muted-foreground mb-2">{model.description}</p>
 
                           <div className="space-y-2">
                             {model.steps.map((step: any, si: number) => (
                               <div key={si} className="space-y-0.5">
                                 <div className="flex items-center gap-1.5">
-                                  <span className={`text-[10px] font-semibold ${step.critical ? "text-destructive" : "text-foreground"}`}>
+                                  <span className={`text-sm font-semibold ${step.critical ? "text-destructive" : "text-foreground"}`}>
                                     {step.name}
                                   </span>
                                   {step.critical && (
-                                    <Badge variant="destructive" className="text-[8px] px-1 py-0">CRITICAL</Badge>
+                                    <Badge variant="destructive" className="text-xs px-1 py-0">CRITICAL</Badge>
                                   )}
                                 </div>
                                 <ul className="space-y-0.5 ml-3">
                                   {step.details.map((d: string, di: number) => (
-                                    <li key={di} className="text-[10px] text-muted-foreground flex items-start gap-1.5">
+                                    <li key={di} className="text-sm text-muted-foreground flex items-start gap-1.5">
                                       <ChevronRight className="w-2.5 h-2.5 flex-shrink-0 mt-0.5" />
                                       <span>{d}</span>
                                     </li>
@@ -1129,9 +1129,9 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                           {model.examples && (
                             <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-dashed border-muted-foreground/10">
-                              <span className="text-[9px] font-semibold text-muted-foreground mr-1">Examples:</span>
+                              <span className="text-xs font-semibold text-muted-foreground mr-1">Examples:</span>
                               {model.examples.map((ex: string, ei: number) => (
-                                <Badge key={ei} variant="secondary" className="text-[9px]">{ex}</Badge>
+                                <Badge key={ei} variant="secondary" className="text-xs">{ex}</Badge>
                               ))}
                             </div>
                           )}
@@ -1142,15 +1142,15 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"certifications" in phase && phase.certifications && (
                     <div className="rounded-md p-3 bg-sky-500/5 dark:bg-sky-500/10 border border-sky-500/20" data-testid="certifications">
-                      <h4 className="font-medium text-xs text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-1.5">
+                      <h4 className="font-medium text-sm text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-1.5">
                         <Shield className="w-3.5 h-3.5" />
                         Required Certifications
                       </h4>
                       <div className="space-y-1.5">
                         {phase.certifications.map((cert: any, ci: number) => (
-                          <div key={ci} className="grid grid-cols-[1fr_auto_2fr] gap-2 items-start text-[10px]">
+                          <div key={ci} className="grid grid-cols-[1fr_auto_2fr] gap-2 items-start text-sm">
                             <span className="font-medium">{cert.name}</span>
-                            <Badge variant="outline" className="text-[8px] px-1 py-0 whitespace-nowrap">{cert.required}</Badge>
+                            <Badge variant="outline" className="text-xs px-1 py-0 whitespace-nowrap">{cert.required}</Badge>
                             <span className="text-muted-foreground">{cert.description}</span>
                           </div>
                         ))}
@@ -1160,14 +1160,14 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"qeSignoff" in phase && phase.qeSignoff && (
                     <div className="rounded-md p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20" data-testid="qe-signoff">
-                      <h4 className="font-medium text-xs text-destructive mb-1 flex items-center gap-1.5">
+                      <h4 className="font-medium text-sm text-destructive mb-1 flex items-center gap-1.5">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         {phase.qeSignoff.title}
                       </h4>
-                      <p className="text-[10px] text-muted-foreground mb-2">{phase.qeSignoff.description}</p>
+                      <p className="text-sm text-muted-foreground mb-2">{phase.qeSignoff.description}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                         {phase.qeSignoff.checkpoints.map((cp: string, ci: number) => (
-                          <div key={ci} className="flex items-start gap-1.5 text-[10px]">
+                          <div key={ci} className="flex items-start gap-1.5 text-sm">
                             <CheckCircle2 className="w-3 h-3 text-destructive flex-shrink-0 mt-0.5" />
                             <span>{cp}</span>
                           </div>
@@ -1178,9 +1178,9 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
 
                   {"examples" in phase && !("outsourceModels" in phase) && phase.examples && Array.isArray(phase.examples) && (
                     <div className="flex flex-wrap gap-1">
-                      <span className="text-[10px] font-semibold text-muted-foreground mr-1">Examples:</span>
+                      <span className="text-sm font-semibold text-muted-foreground mr-1">Examples:</span>
                       {(phase.examples as string[]).map((e: string, ei: number) => (
-                        <Badge key={ei} variant="secondary" className="text-[10px]">{e}</Badge>
+                        <Badge key={ei} variant="secondary" className="text-sm">{e}</Badge>
                       ))}
                     </div>
                   )}
@@ -1188,12 +1188,12 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                   {phase.gate && (
                     <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 border border-destructive/20">
                       <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-                      <p className="text-xs font-medium text-destructive">{phase.gate}</p>
+                      <p className="text-sm font-medium text-destructive">{phase.gate}</p>
                     </div>
                   )}
 
                   {"note" in phase && phase.note && (
-                    <p className="text-[10px] text-muted-foreground italic">{phase.note}</p>
+                    <p className="text-sm text-muted-foreground italic">{phase.note}</p>
                   )}
                 </div>
               </motion.div>
@@ -1213,17 +1213,17 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
             {phase.id === 3 ? (
               <div className="flex flex-col items-center gap-0.5">
                 <GitFork className="w-4 h-4 text-orange-400" />
-                <span className="text-[8px] text-orange-500 font-medium">In-house path OR skip to Phase 8 if fully outsourced</span>
+                <span className="text-xs text-orange-500 font-medium">In-house path OR skip to Phase 8 if fully outsourced</span>
               </div>
             ) : phase.id === 7 ? (
               <div className="flex flex-col items-center gap-0.5">
                 <GitFork className="w-4 h-4 text-orange-400" />
-                <span className="text-[8px] text-orange-500 font-medium">Partial outsource or continue in-house</span>
+                <span className="text-xs text-orange-500 font-medium">Partial outsource or continue in-house</span>
               </div>
             ) : phase.id === 8 ? (
               <div className="flex flex-col items-center gap-0.5">
                 <GitMerge className="w-4 h-4 text-teal-500" />
-                <span className="text-[8px] text-teal-600 dark:text-teal-400 font-medium">Paths merge for Final QC</span>
+                <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">Paths merge for Final QC</span>
               </div>
             ) : (
               <ArrowDown className="w-4 h-4 text-muted-foreground/40" />
@@ -1243,7 +1243,7 @@ function FlowNode({ label, color, delay, icon: NodeIcon, badge }: { label: strin
       transition={{ delay, type: "spring", stiffness: 300 }}
       className="relative"
     >
-      <div className={`${color} px-2.5 py-1.5 rounded-md text-white text-[10px] font-medium whitespace-nowrap flex items-center gap-1.5`}>
+      <div className={`${color} px-2.5 py-1.5 rounded-md text-white text-sm font-medium whitespace-nowrap flex items-center gap-1.5`}>
         {NodeIcon && <NodeIcon className="w-3 h-3" />}
         {label}
       </div>
@@ -1270,7 +1270,7 @@ function FlowArrow({ direction = "right", delay, label }: { direction?: "right" 
         <ArrowDown className="w-3.5 h-3.5 text-muted-foreground/50" />
       )}
       {label && (
-        <span className="text-[8px] text-muted-foreground/60 font-medium">{label}</span>
+        <span className="text-xs text-muted-foreground/60 font-medium">{label}</span>
       )}
     </motion.div>
   );
@@ -1283,8 +1283,8 @@ function FlowchartMini() {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-3">
             <GitFork className="w-4 h-4 text-primary" />
-            <span className="text-xs font-semibold">Production Flow Map</span>
-            <span className="text-[10px] text-muted-foreground ml-1">Non-linear process with parallel paths</span>
+            <span className="text-sm font-semibold">Production Flow Map</span>
+            <span className="text-sm text-muted-foreground ml-1">Non-linear process with parallel paths</span>
           </div>
 
           <div className="space-y-3">
@@ -1305,7 +1305,7 @@ function FlowchartMini() {
               className="relative border-2 border-dashed border-orange-400/40 dark:border-orange-500/30 rounded-lg p-3"
             >
               <div className="absolute -top-2.5 left-4 bg-background px-2">
-                <span className="text-[9px] font-semibold text-orange-500 flex items-center gap-1">
+                <span className="text-xs font-semibold text-orange-500 flex items-center gap-1">
                   <GitFork className="w-3 h-3" /> OUTSOURCE ROUTING DECISION
                 </span>
               </div>
@@ -1317,7 +1317,7 @@ function FlowchartMini() {
                   transition={{ delay: 0.5 }}
                   className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/20 sm:col-span-2"
                 >
-                  <span className="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">In-House / Partial Outsource Path</span>
+                  <span className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">In-House / Partial Outsource Path</span>
                   <div className="flex items-center gap-1.5 flex-wrap justify-center">
                     <FlowNode label="Material" color="bg-amber-500" delay={0.55} icon={Package} />
                     <FlowArrow delay={0.58} />
@@ -1327,7 +1327,7 @@ function FlowchartMini() {
                     <FlowArrow delay={0.68} />
                     <FlowNode label="Production" color="bg-cyan-500" delay={0.7} icon={Factory} />
                   </div>
-                  <div className="flex items-center gap-1 text-[8px] text-muted-foreground">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <RotateCcw className="w-2.5 h-2.5" />
                     <span>Partial outsource sends specific ops to supplier, returns for next step</span>
                   </div>
@@ -1339,7 +1339,7 @@ function FlowchartMini() {
                   transition={{ delay: 0.5 }}
                   className="flex flex-col items-center gap-1.5 p-2 rounded-md bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20"
                 >
-                  <span className="text-[9px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Full Outsource Path</span>
+                  <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Full Outsource Path</span>
                   <div className="flex flex-col items-center gap-1">
                     <FlowNode label="QCP Validate" color="bg-orange-500" delay={0.55} icon={ClipboardCheck} badge="QE" />
                     <FlowArrow direction="down" delay={0.58} />
@@ -1347,7 +1347,7 @@ function FlowchartMini() {
                     <FlowArrow direction="down" delay={0.63} />
                     <FlowNode label="Incoming QC" color="bg-orange-500" delay={0.65} icon={Search} badge="QC" />
                   </div>
-                  <div className="text-[8px] text-orange-500 font-medium mt-1 text-center">
+                  <div className="text-xs text-orange-500 font-medium mt-1 text-center">
                     Phases 4-7 skipped
                   </div>
                 </motion.div>
@@ -1359,7 +1359,7 @@ function FlowchartMini() {
                 transition={{ delay: 0.75 }}
                 className="mt-2 text-center"
               >
-                <span className="text-[8px] text-muted-foreground italic">
+                <span className="text-xs text-muted-foreground italic">
                   Partial outsource: parts alternate between in-house and supplier. Full outsource: entire job goes to supplier(s).
                 </span>
               </motion.div>
@@ -1373,7 +1373,7 @@ function FlowchartMini() {
                 className="flex items-center gap-1"
               >
                 <GitMerge className="w-3.5 h-3.5 text-teal-500" />
-                <span className="text-[9px] text-muted-foreground font-medium">All paths merge</span>
+                <span className="text-xs text-muted-foreground font-medium">All paths merge</span>
               </motion.div>
             </div>
 
@@ -1396,23 +1396,23 @@ function FlowchartMini() {
           >
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-cyan-500" />
-              <span className="text-[9px] text-muted-foreground">In-House</span>
+              <span className="text-xs text-muted-foreground">In-House</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-orange-500" />
-              <span className="text-[9px] text-muted-foreground">Full Outsource</span>
+              <span className="text-xs text-muted-foreground">Full Outsource</span>
             </div>
             <div className="flex items-center gap-1.5">
               <GitFork className="w-3 h-3 text-orange-400" />
-              <span className="text-[9px] text-muted-foreground">Routing Decision</span>
+              <span className="text-xs text-muted-foreground">Routing Decision</span>
             </div>
             <div className="flex items-center gap-1.5">
               <GitMerge className="w-3 h-3 text-teal-500" />
-              <span className="text-[9px] text-muted-foreground">Merge Point</span>
+              <span className="text-xs text-muted-foreground">Merge Point</span>
             </div>
             <div className="flex items-center gap-1.5">
               <RotateCcw className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[9px] text-muted-foreground">Repeatable</span>
+              <span className="text-xs text-muted-foreground">Repeatable</span>
             </div>
           </motion.div>
         </CardContent>
@@ -1543,10 +1543,10 @@ function TrainingQuiz() {
 
     return (
       <div className="space-y-4" data-testid="role-selector">
-        <p className="text-xs text-muted-foreground text-center">Select your role to begin a timed competency assessment. Questions are randomized from a large pool — each attempt is unique.</p>
+        <p className="text-sm text-muted-foreground text-center">Select your role to begin a timed competency assessment. Questions are randomized from a large pool — each attempt is unique.</p>
         {grouped.map(group => (
           <div key={group.tier}>
-            <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{group.label}</h4>
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">{group.label}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {group.members.map(role => {
                 const RoleIcon = role.icon;
@@ -1564,10 +1564,10 @@ function TrainingQuiz() {
                         <RoleIcon className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold leading-tight">{role.title}</p>
-                        <p className="text-[10px] text-muted-foreground">{pool.length} questions ({scenarios} scenarios)</p>
+                        <p className="text-sm font-semibold leading-tight">{role.title}</p>
+                        <p className="text-sm text-muted-foreground">{pool.length} questions ({scenarios} scenarios)</p>
                       </div>
-                      <Badge variant="outline" className="text-[9px] flex-shrink-0">{role.shortTitle}</Badge>
+                      <Badge variant="outline" className="text-xs flex-shrink-0">{role.shortTitle}</Badge>
                     </CardContent>
                   </Card>
                 );
@@ -1598,50 +1598,50 @@ function TrainingQuiz() {
             transition={{ type: "spring", stiffness: 200 }}
           >
             <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${percentage >= 75 ? "bg-emerald-500/20" : "bg-amber-500/20"}`}>
-              <span className={`text-2xl font-bold ${percentage >= 75 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+              <span className={`text-3xl font-bold ${percentage >= 75 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
                 {percentage}%
               </span>
             </div>
           </motion.div>
-          <h3 className={`text-lg font-bold mt-2 ${ratingColor}`}>{rating}</h3>
-          <p className="text-xs text-muted-foreground">{currentRole?.title} — {score}/{questions.length} correct in {formatTime(elapsedTime)}</p>
+          <h3 className={`text-xl font-bold mt-2 ${ratingColor}`}>{rating}</h3>
+          <p className="text-sm text-muted-foreground">{currentRole?.title} — {score}/{questions.length} correct in {formatTime(elapsedTime)}</p>
         </div>
 
         <Card className="overflow-visible" data-testid="score-breakdown">
           <CardContent className="p-4 space-y-3">
-            <h4 className="text-xs font-semibold">Performance Breakdown</h4>
+            <h4 className="text-sm font-semibold">Performance Breakdown</h4>
             <div className="grid grid-cols-3 gap-2">
               <div className="p-2 rounded-md bg-muted/30 border text-center">
-                <p className="text-lg font-bold">{score}/{questions.length}</p>
-                <p className="text-[9px] text-muted-foreground">Overall</p>
+                <p className="text-xl font-bold">{score}/{questions.length}</p>
+                <p className="text-xs text-muted-foreground">Overall</p>
               </div>
               <div className="p-2 rounded-md bg-muted/30 border text-center">
-                <p className="text-lg font-bold">{scenarioQs.length > 0 ? Math.round((scenarioScore / scenarioQs.length) * 100) : 0}%</p>
-                <p className="text-[9px] text-muted-foreground">Scenarios</p>
+                <p className="text-xl font-bold">{scenarioQs.length > 0 ? Math.round((scenarioScore / scenarioQs.length) * 100) : 0}%</p>
+                <p className="text-xs text-muted-foreground">Scenarios</p>
               </div>
               <div className="p-2 rounded-md bg-muted/30 border text-center">
-                <p className="text-lg font-bold">{avgTime}s</p>
-                <p className="text-[9px] text-muted-foreground">Avg/Question</p>
+                <p className="text-xl font-bold">{avgTime}s</p>
+                <p className="text-xs text-muted-foreground">Avg/Question</p>
               </div>
             </div>
 
             {criticalQs.length > 0 && (
               <div className={`p-2 rounded-md border ${criticalScore === criticalQs.length ? "bg-emerald-500/10 border-emerald-500/30" : "bg-destructive/10 border-destructive/30"}`}>
-                <p className={`text-xs font-semibold ${criticalScore === criticalQs.length ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}>
+                <p className={`text-sm font-semibold ${criticalScore === criticalQs.length ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}>
                   Critical Decisions: {criticalScore}/{criticalQs.length} {criticalScore === criticalQs.length ? "— All correct" : "— Review required"}
                 </p>
               </div>
             )}
 
-            <h4 className="text-xs font-semibold mt-2">Category Scores</h4>
+            <h4 className="text-sm font-semibold mt-2">Category Scores</h4>
             <div className="space-y-1.5">
               {Object.entries(categoryScores).map(([cat, data]) => {
                 const catPct = Math.round((data.correct / data.total) * 100);
                 return (
                   <div key={cat}>
                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <span className="text-[10px] font-medium">{cat}</span>
-                      <span className="text-[10px] text-muted-foreground">{data.correct}/{data.total}</span>
+                      <span className="text-sm font-medium">{cat}</span>
+                      <span className="text-sm text-muted-foreground">{data.correct}/{data.total}</span>
                     </div>
                     <Progress value={catPct} className="h-1.5" />
                   </div>
@@ -1673,7 +1673,7 @@ function TrainingQuiz() {
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={backToRoles}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground px-2 py-1 rounded-md"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground px-2 py-1 rounded-md"
           data-testid="button-back-roles-inline"
         >
           <ArrowRight className="w-3 h-3 rotate-180" />
@@ -1683,25 +1683,25 @@ function TrainingQuiz() {
           <div className={`w-6 h-6 rounded-md ${currentRole?.color} flex items-center justify-center`}>
             <RoleIcon className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="text-xs font-semibold">{currentRole?.shortTitle}</span>
+          <span className="text-sm font-semibold">{currentRole?.shortTitle}</span>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-[10px]">{score}/{currentQ + (showResult ? 1 : 0)}</Badge>
-          <Badge variant={timeWarning ? "destructive" : "outline"} className="text-[10px] tabular-nums">
+          <Badge variant="secondary" className="text-sm">{score}/{currentQ + (showResult ? 1 : 0)}</Badge>
+          <Badge variant={timeWarning ? "destructive" : "outline"} className="text-sm tabular-nums">
             {formatTime(Math.max(0, timeRemaining))}
           </Badge>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
           Q{currentQ + 1}/{questions.length}
         </span>
         <Progress value={((currentQ + (showResult ? 1 : 0)) / questions.length) * 100} className="flex-1" />
         {currentDifficulty && currentDifficulty !== "standard" && (
           <Badge
             variant={currentDifficulty === "critical" ? "destructive" : "outline"}
-            className="text-[9px] px-1.5 py-0"
+            className="text-xs px-1.5 py-0"
           >
             {currentDifficulty === "critical" ? "CRITICAL" : "SCENARIO"}
           </Badge>
@@ -1716,7 +1716,7 @@ function TrainingQuiz() {
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.2 }}
         >
-          <h4 className="font-medium text-sm mb-3">{questions[currentQ].question}</h4>
+          <h4 className="font-medium text-base mb-3">{questions[currentQ].question}</h4>
           <div className="space-y-2">
             {questions[currentQ].options.map((option, oi) => {
               let optionClass = "hover-elevate cursor-pointer";
@@ -1738,7 +1738,7 @@ function TrainingQuiz() {
                   data-testid={`quiz-option-${oi}`}
                 >
                   <CardContent className="p-3 flex items-center gap-3">
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 text-xs font-bold ${
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 text-sm font-bold ${
                       showResult && oi === questions[currentQ].correct
                         ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
                         : showResult && oi === selectedAnswer
@@ -1747,7 +1747,7 @@ function TrainingQuiz() {
                     }`}>
                       {String.fromCharCode(65 + oi)}
                     </div>
-                    <span className="text-sm">{option}</span>
+                    <span className="text-base">{option}</span>
                   </CardContent>
                 </Card>
               );
@@ -1760,7 +1760,7 @@ function TrainingQuiz() {
               animate={{ opacity: 1, y: 0 }}
               className="mt-3 p-3 rounded-md bg-muted/50 border"
             >
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 <span className="font-semibold">Explanation: </span>
                 {questions[currentQ].explanation}
               </p>
@@ -1788,8 +1788,8 @@ export default function Infographic() {
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-sm font-bold tracking-tight leading-tight">PRECILAYER</h1>
-              <p className="text-[10px] text-muted-foreground leading-tight">Master Production & Quality Flow</p>
+              <h1 className="text-base font-bold tracking-tight leading-tight">PRECILAYER</h1>
+              <p className="text-sm text-muted-foreground leading-tight">Master Production & Quality Flow</p>
             </div>
           </div>
         </div>
@@ -1801,10 +1801,10 @@ export default function Infographic() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6"
         >
-          <h2 className="text-2xl font-bold tracking-tight" data-testid="text-main-title">
+          <h2 className="text-3xl font-bold tracking-tight" data-testid="text-main-title">
             Production & Quality Control
           </h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-xl mx-auto">
+          <p className="text-base text-muted-foreground mt-1 max-w-xl mx-auto">
             Interactive training module covering all 11 phases of the PRECILAYER master production flow, from order intake to dispatch.
           </p>
         </motion.div>
@@ -1853,8 +1853,8 @@ export default function Infographic() {
               animate={{ opacity: 1 }}
             >
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold" data-testid="text-roles-title">Roles & Responsibilities</h3>
-                <p className="text-xs text-muted-foreground">Who does what across the 11-phase production flow</p>
+                <h3 className="text-xl font-bold" data-testid="text-roles-title">Roles & Responsibilities</h3>
+                <p className="text-sm text-muted-foreground">Who does what across the 11-phase production flow</p>
               </div>
 
               {Object.entries(tierLabels)
@@ -1864,7 +1864,7 @@ export default function Infographic() {
                   if (tierRoles.length === 0) return null;
                   return (
                     <div key={tierId} className="mb-4">
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
                         {tierInfo.label}
                       </h4>
@@ -1886,22 +1886,22 @@ export default function Infographic() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2 flex-wrap">
-                                        <h4 className="font-semibold text-sm">{role.title}</h4>
-                                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">{role.shortTitle}</Badge>
+                                        <h4 className="font-semibold text-base">{role.title}</h4>
+                                        <Badge variant="outline" className="text-sm px-1.5 py-0">{role.shortTitle}</Badge>
                                       </div>
-                                      <p className="text-xs text-muted-foreground mt-1">{role.description}</p>
+                                      <p className="text-sm text-muted-foreground mt-1">{role.description}</p>
                                       <div className="mt-2 space-y-1">
                                         {role.responsibilities.map((resp, i) => (
-                                          <div key={i} className="flex items-start gap-1.5 text-[10px]">
+                                          <div key={i} className="flex items-start gap-1.5 text-sm">
                                             <ChevronRight className="w-2.5 h-2.5 flex-shrink-0 mt-0.5 text-muted-foreground/50" />
                                             <span className="text-muted-foreground">{resp}</span>
                                           </div>
                                         ))}
                                       </div>
                                       <div className="flex flex-wrap gap-1 mt-2">
-                                        <span className="text-[9px] font-semibold text-muted-foreground mr-1">Active in:</span>
+                                        <span className="text-xs font-semibold text-muted-foreground mr-1">Active in:</span>
                                         {role.phases.map(phaseId => (
-                                          <Badge key={phaseId} variant="secondary" className="text-[9px] px-1.5 py-0">
+                                          <Badge key={phaseId} variant="secondary" className="text-xs px-1.5 py-0">
                                             P{phaseId}
                                           </Badge>
                                         ))}
@@ -1927,8 +1927,8 @@ export default function Infographic() {
               className="space-y-3"
             >
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold" data-testid="text-critical-title">5 Critical Control Points</h3>
-                <p className="text-xs text-muted-foreground">These points guarantee total quality control. They must NEVER fail.</p>
+                <h3 className="text-xl font-bold" data-testid="text-critical-title">5 Critical Control Points</h3>
+                <p className="text-sm text-muted-foreground">These points guarantee total quality control. They must NEVER fail.</p>
               </div>
               {criticalControlPoints.map((cp, index) => {
                 const Icon = cp.icon;
@@ -1947,27 +1947,27 @@ export default function Infographic() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-semibold text-sm">{cp.name}</h4>
-                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0">MUST NOT FAIL</Badge>
-                            <Badge variant="secondary" className="text-[9px] px-1 py-0">Phase {cp.phase}</Badge>
+                            <h4 className="font-semibold text-base">{cp.name}</h4>
+                            <Badge variant="destructive" className="text-sm px-1.5 py-0">MUST NOT FAIL</Badge>
+                            <Badge variant="secondary" className="text-xs px-1 py-0">Phase {cp.phase}</Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">{cp.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{cp.description}</p>
                           <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                            <span className="text-[9px] font-semibold text-muted-foreground">Owned by:</span>
+                            <span className="text-xs font-semibold text-muted-foreground">Owned by:</span>
                             {ownerRoleData.map(role => role && (
-                              <Badge key={role.id} variant="outline" className={`text-[9px] px-1.5 py-0 ${role.textColor}`}>
+                              <Badge key={role.id} variant="outline" className={`text-xs px-1.5 py-0 ${role.textColor}`}>
                                 {role.shortTitle} — {role.title}
                               </Badge>
                             ))}
                           </div>
                           <div className="mt-2 p-2 rounded-md bg-destructive/5 border border-destructive/10">
-                            <p className="text-[10px] text-destructive font-medium">
+                            <p className="text-sm text-destructive font-medium">
                               If this fails: {cp.failureImpact}
                             </p>
                           </div>
                         </div>
                         <div className="w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-destructive">{index + 1}</span>
+                          <span className="text-base font-bold text-destructive">{index + 1}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -1977,22 +1977,22 @@ export default function Infographic() {
 
               <Card className="overflow-visible mt-6" data-testid="traceability-summary">
                 <CardContent className="p-4">
-                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                  <h4 className="font-semibold text-base mb-2 flex items-center gap-2">
                     <FlaskConical className="w-4 h-4 text-primary" />
                     Traceability Control Requirement
                   </h4>
-                  <p className="text-xs text-muted-foreground mb-2">
+                  <p className="text-sm text-muted-foreground mb-2">
                     Mandatory traceability must be maintained between:
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {["Material heat number", "Job ID", "Inspection records", "Supplier process records"].map((item, i) => (
                       <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-primary/5">
                         <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                        <span className="text-xs">{item}</span>
+                        <span className="text-sm">{item}</span>
                       </div>
                     ))}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-2 italic">
+                  <p className="text-sm text-muted-foreground mt-2 italic">
                     This ensures aerospace and medical compliance readiness.
                   </p>
                 </CardContent>
@@ -2000,13 +2000,13 @@ export default function Infographic() {
 
               <Card className="overflow-visible" data-testid="outsource-summary">
                 <CardContent className="p-4">
-                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                  <h4 className="font-semibold text-base mb-2 flex items-center gap-2">
                     <ExternalLink className="w-4 h-4 text-orange-500" />
                     Outsourced Process QC Summary
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="p-3 rounded-md bg-orange-500/5 border border-orange-500/20">
-                      <p className="text-xs font-semibold text-orange-600 dark:text-orange-400 mb-1.5">Before Outsourcing</p>
+                      <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-1.5">Before Outsourcing</p>
                       <ul className="space-y-1">
                         {["Outgoing QC inspection mandatory", "Part count verification mandatory"].map((item, i) => (
                           <li key={i} className="text-[11px] text-muted-foreground flex items-center gap-1.5">
@@ -2017,7 +2017,7 @@ export default function Infographic() {
                       </ul>
                     </div>
                     <div className="p-3 rounded-md bg-orange-500/5 border border-orange-500/20">
-                      <p className="text-xs font-semibold text-orange-600 dark:text-orange-400 mb-1.5">After Outsourcing</p>
+                      <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-1.5">After Outsourcing</p>
                       <ul className="space-y-1">
                         {["Incoming QC inspection mandatory", "Supplier certification verification", "Traceability maintained mandatory"].map((item, i) => (
                           <li key={i} className="text-[11px] text-muted-foreground flex items-center gap-1.5">
@@ -2044,8 +2044,8 @@ export default function Infographic() {
               animate={{ opacity: 1 }}
             >
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold" data-testid="text-matrix-title">Department Responsibility Matrix</h3>
-                <p className="text-xs text-muted-foreground">Who owns what across each department — phases, gates, and deliverables.</p>
+                <h3 className="text-xl font-bold" data-testid="text-matrix-title">Department Responsibility Matrix</h3>
+                <p className="text-sm text-muted-foreground">Who owns what across each department — phases, gates, and deliverables.</p>
               </div>
 
               {Object.entries(tierLabels)
@@ -2059,11 +2059,11 @@ export default function Infographic() {
                     <Card key={tierId} className="overflow-visible mb-4" data-testid={`dept-matrix-${tierId}`}>
                       <CardContent className="p-4">
                         <div className="flex items-center gap-2 mb-3 flex-wrap">
-                          <h4 className="font-semibold text-sm">{tierInfo.label} Department</h4>
-                          <Badge variant="secondary" className="text-[9px]">{deptRoles.length} roles</Badge>
-                          <Badge variant="secondary" className="text-[9px]">{deptPhases.length} phases</Badge>
+                          <h4 className="font-semibold text-base">{tierInfo.label} Department</h4>
+                          <Badge variant="secondary" className="text-xs">{deptRoles.length} roles</Badge>
+                          <Badge variant="secondary" className="text-xs">{deptPhases.length} phases</Badge>
                           {deptCritical.length > 0 && (
-                            <Badge variant="destructive" className="text-[9px]">{deptCritical.length} critical gates</Badge>
+                            <Badge variant="destructive" className="text-xs">{deptCritical.length} critical gates</Badge>
                           )}
                         </div>
                         <div className="space-y-3">
@@ -2076,32 +2076,32 @@ export default function Infographic() {
                                   <div className={`w-7 h-7 rounded-md ${role.color} flex items-center justify-center flex-shrink-0`}>
                                     <RoleIcon className="w-3.5 h-3.5 text-white" />
                                   </div>
-                                  <span className="text-xs font-semibold">{role.title}</span>
-                                  <Badge variant="outline" className="text-[9px] px-1 py-0">{role.shortTitle}</Badge>
+                                  <span className="text-sm font-semibold">{role.title}</span>
+                                  <Badge variant="outline" className="text-xs px-1 py-0">{role.shortTitle}</Badge>
                                 </div>
                                 <div className="flex flex-wrap gap-1 mb-2">
-                                  <span className="text-[9px] text-muted-foreground font-semibold mr-1">Phases:</span>
+                                  <span className="text-xs text-muted-foreground font-semibold mr-1">Phases:</span>
                                   {role.phases.map(pid => {
                                     const phase = phases.find(p => p.id === pid);
                                     return (
-                                      <Badge key={pid} variant="secondary" className="text-[8px] px-1 py-0">
+                                      <Badge key={pid} variant="secondary" className="text-xs px-1 py-0">
                                         P{pid}: {phase?.title.split(" ").slice(0, 2).join(" ")}
                                       </Badge>
                                     );
                                   })}
                                 </div>
                                 <div className="flex flex-wrap gap-1">
-                                  <span className="text-[9px] text-muted-foreground font-semibold mr-1">Deliverables:</span>
+                                  <span className="text-xs text-muted-foreground font-semibold mr-1">Deliverables:</span>
                                   {role.responsibilities.slice(0, 3).map((r, i) => (
-                                    <span key={i} className="text-[9px] text-muted-foreground">{i > 0 ? " · " : ""}{r}</span>
+                                    <span key={i} className="text-xs text-muted-foreground">{i > 0 ? " · " : ""}{r}</span>
                                   ))}
                                 </div>
                                 {roleCritical.length > 0 && (
                                   <div className="flex items-center gap-1 mt-2 flex-wrap">
                                     <AlertTriangle className="w-3 h-3 text-destructive flex-shrink-0" />
-                                    <span className="text-[9px] font-semibold text-destructive">Critical gates:</span>
+                                    <span className="text-xs font-semibold text-destructive">Critical gates:</span>
                                     {roleCritical.map((cp, i) => (
-                                      <span key={i} className="text-[9px] text-destructive">{cp.name}</span>
+                                      <span key={i} className="text-xs text-destructive">{cp.name}</span>
                                     ))}
                                   </div>
                                 )}
@@ -2116,7 +2116,7 @@ export default function Infographic() {
 
               <Card className="overflow-visible" data-testid="inspection-matrix">
                 <CardContent className="p-4">
-                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                  <h4 className="font-semibold text-base mb-3 flex items-center gap-2">
                     <Search className="w-4 h-4 text-primary" />
                     Inspection Level Reference
                   </h4>
@@ -2124,13 +2124,13 @@ export default function Infographic() {
                     {inspectionMatrix.map((row, index) => (
                       <div key={index} className="flex items-center gap-3 p-2 rounded-md bg-muted/20 border">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-bold text-primary">L{row.level}</span>
+                          <span className="text-sm font-bold text-primary">L{row.level}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium">{row.condition}</p>
-                          <p className="text-[10px] text-muted-foreground">{row.method}</p>
+                          <p className="text-sm font-medium">{row.condition}</p>
+                          <p className="text-sm text-muted-foreground">{row.method}</p>
                         </div>
-                        <Badge variant={row.level >= 4 ? "destructive" : "secondary"} className="flex-shrink-0 text-[9px]">
+                        <Badge variant={row.level >= 4 ? "destructive" : "secondary"} className="flex-shrink-0 text-xs">
                           Level {row.level}
                         </Badge>
                       </div>
@@ -2147,8 +2147,8 @@ export default function Infographic() {
               animate={{ opacity: 1 }}
             >
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold" data-testid="text-quiz-title">Competency Assessment</h3>
-                <p className="text-xs text-muted-foreground">Timed, randomized assessment with scenario-based decision-making questions. Each attempt is unique.</p>
+                <h3 className="text-xl font-bold" data-testid="text-quiz-title">Competency Assessment</h3>
+                <p className="text-sm text-muted-foreground">Timed, randomized assessment with scenario-based decision-making questions. Each attempt is unique.</p>
               </div>
               <Card className="overflow-visible" data-testid="quiz-card">
                 <CardContent className="p-4">
@@ -2160,7 +2160,7 @@ export default function Infographic() {
         </Tabs>
 
         <footer className="mt-8 pb-6 text-center">
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             PRECILAYER Master Production & Quality Flow Training Module
           </p>
         </footer>
