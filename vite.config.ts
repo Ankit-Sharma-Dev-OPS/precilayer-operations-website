@@ -26,6 +26,10 @@ export default defineConfig({
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
+  // GitHub Pages base path configuration:
+  // For custom domain: base: "/" 
+  // For project repo (github.com/user/precilayer-operations-website): base: "/precilayer-operations-website/"
+  base: "/precilayer-operations-website/",
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
