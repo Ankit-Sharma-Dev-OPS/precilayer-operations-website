@@ -1896,6 +1896,22 @@ export default function Infographic() {
                 <p className="text-sm text-muted-foreground">Who does what across the 11-phase production flow</p>
               </div>
 
+              <Card className="overflow-visible mb-4" data-testid="phase-legend-roles">
+                <CardContent className="p-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Phase Key</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1">
+                    {phases.map(p => (
+                      <div key={p.id} className="flex items-center gap-2">
+                        <div className={`w-5 h-5 rounded-sm bg-gradient-to-br ${p.color} flex items-center justify-center flex-shrink-0`}>
+                          <span className="text-[10px] font-bold text-white">{p.id}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground truncate">{p.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
               {Object.entries(tierLabels)
                 .sort(([, a], [, b]) => a.order - b.order)
                 .map(([tierId, tierInfo]) => {
@@ -2095,6 +2111,22 @@ export default function Infographic() {
                 <h3 className="text-xl font-bold" data-testid="text-matrix-title">Department Responsibility Matrix</h3>
                 <p className="text-sm text-muted-foreground">Who owns what across each department — phases, gates, and deliverables.</p>
               </div>
+
+              <Card className="overflow-visible mb-4" data-testid="phase-legend-matrix">
+                <CardContent className="p-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Phase Key</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1">
+                    {phases.map(p => (
+                      <div key={p.id} className="flex items-center gap-2">
+                        <div className={`w-5 h-5 rounded-sm bg-gradient-to-br ${p.color} flex items-center justify-center flex-shrink-0`}>
+                          <span className="text-[10px] font-bold text-white">{p.id}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground truncate">{p.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
               {Object.entries(tierLabels)
                 .sort(([, a], [, b]) => a.order - b.order)
