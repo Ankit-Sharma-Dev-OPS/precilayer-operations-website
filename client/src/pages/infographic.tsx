@@ -522,11 +522,11 @@ const roles = [
 ];
 
 const tierLabels: Record<string, { label: string; order: number }> = {
-  management: { label: "Management", order: 1 },
-  engineering: { label: "Engineering", order: 2 },
-  quality: { label: "Quality", order: 3 },
-  operations: { label: "Operations", order: 4 },
-  commercial: { label: "Commercial", order: 5 },
+  commercial: { label: "Sales & Commercial", order: 1 },
+  management: { label: "Management", order: 2 },
+  engineering: { label: "Engineering", order: 3 },
+  quality: { label: "Quality", order: 4 },
+  operations: { label: "Operations", order: 5 },
 };
 
 type QuizQuestion = { question: string; options: string[]; correct: number; explanation: string; category: string; difficulty: "standard" | "scenario" | "critical" };
