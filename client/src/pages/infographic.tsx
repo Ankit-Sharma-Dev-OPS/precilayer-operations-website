@@ -496,7 +496,7 @@ const criticalControlPoints = [
   { name: "Manufacturing Strategy Definition", icon: Cog, description: "Complete machining strategy, datum definition, and workholding plan must be approved before programming begins.", ownerRoles: ["pe", "pm"], phase: 2, failureImpact: "Programming starts without strategy — wrong fixtures, wrong datums, entire job scrapped" },
   { name: "Quality Control Plan Definition", icon: ClipboardCheck, description: "Formal inspection requirements for every stage must be defined with inspection levels and frequencies.", ownerRoles: ["qe", "pe"], phase: 3, failureImpact: "No QCP means no inspection gates — defects pass undetected to customer" },
   { name: "Outsource Incoming Inspection", icon: ExternalLink, description: "All parts returning from suppliers must pass incoming QC with certification verification before re-entering production.", ownerRoles: ["sqe", "qe"], phase: 8, failureImpact: "Uninspected outsource parts re-enter production — unverified certifications, NADCAP breach" },
-  { name: "Final Inspection Approval", icon: CheckCircle2, description: "Complete final inspection per Quality Control Plan must be passed before parts can be released for dispatch.", ownerRoles: ["qe"], phase: 10, failureImpact: "Non-conforming parts shipped to customer — warranty claims, regulatory action" },
+  { name: "Final Inspection Approval", icon: CheckCircle2, description: "Complete final inspection per Quality Control Plan must be passed before parts can be released for dispatch.", ownerRoles: ["qe"], phase: 9, failureImpact: "Non-conforming parts shipped to customer — warranty claims, regulatory action" },
 ];
 
 const inspectionMatrix = [
@@ -742,9 +742,9 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                           </div>
                         </div>
                       )}
-                      {"responsibilities" in step && step.responsibilities && (
+                      {"responsibilities" in step && step.responsibilities && typeof step.responsibilities === "object" && (
                         <div className="mt-2 space-y-1.5">
-                          {Object.entries(step.responsibilities as Record<string, string[]>).map(([role, tasks]) => (
+                          {Object.entries(step.responsibilities as Record<string, string[]>).map(([role, tasks]: [string, string[]]) => (
                             <div key={role} className="p-2 rounded bg-background/50 dark:bg-background/30">
                               <p className="text-[10px] font-semibold text-muted-foreground">{role}</p>
                               <ul className="mt-0.5">
@@ -983,10 +983,10 @@ function PhaseCard({ phase, index, isExpanded, onToggle }: { phase: typeof phase
                     </div>
                   )}
 
-                  {"examples" in phase && !("outsourceModels" in phase) && phase.examples && (
+                  {"examples" in phase && !("outsourceModels" in phase) && phase.examples && Array.isArray(phase.examples) && (
                     <div className="flex flex-wrap gap-1">
                       <span className="text-[10px] font-semibold text-muted-foreground mr-1">Examples:</span>
-                      {phase.examples.map((e, ei) => (
+                      {(phase.examples as string[]).map((e: string, ei: number) => (
                         <Badge key={ei} variant="secondary" className="text-[10px]">{e}</Badge>
                       ))}
                     </div>
@@ -1249,7 +1249,11 @@ function TrainingQuiz() {
   useEffect(() => {
     if (startTime && !completed) {
       const timer = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        setElapsedTime(elapsed);
+        if (elapsed >= ASSESSMENT_TIME_LIMIT) {
+          setCompleted(true);
+        }
       }, 1000);
       return () => clearInterval(timer);
     }
